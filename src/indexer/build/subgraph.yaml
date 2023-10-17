@@ -1,0 +1,33 @@
+specVersion: 0.0.5
+schema:
+  file: schema.graphql
+dataSources:
+  - kind: ethereum
+    name: TradeFinance
+    network: mumbai
+    source:
+      address: "0x7F29a2fD3ECeabB56cFaD2F73C5C82121740dAf1"
+      abi: TradeFinance
+      startBlock: 40387184
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.7
+      language: wasm/assemblyscript
+      entities:
+        - DocUploaded
+        - LcCreated
+        - OwnershipTransferred
+        - SalesContractCreated
+      abis:
+        - name: TradeFinance
+          file: TradeFinance\abis\TradeFinance.json
+      eventHandlers:
+        - event: DocUploaded(uint256)
+          handler: handleDocUploaded
+        - event: LcCreated(uint256,uint256)
+          handler: handleLcCreated
+        - event: OwnershipTransferred(indexed address,indexed address)
+          handler: handleOwnershipTransferred
+        - event: SalesContractCreated(uint256)
+          handler: handleSalesContractCreated
+      file: TradeFinance\TradeFinance.wasm

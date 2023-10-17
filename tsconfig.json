@@ -1,0 +1,17 @@
+{
+  "compilerOptions": {
+    "target": "ES6", // or "ESNext" for modern JavaScript
+    "module": "CommonJS", // Use CommonJS for compatibility with Node.js require
+    "moduleResolution": "node",
+    "baseUrl": "src",
+    "outDir": "./dist",
+    "sourceMap": true,
+    "noImplicitAny": true,
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true,
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true
+  },
+  "include": ["src/**/*"],
+  "exclude": ["node_modules"]
+}
