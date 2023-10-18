@@ -1,4 +1,3 @@
-import { createNodeRedisClient } from "handy-redis";
 require("dotenv").config();
 const host = process.env.REDIS_HOST;
 const port = Number.parseInt(process.env.REDIS_PORT);
