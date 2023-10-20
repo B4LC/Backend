@@ -5,6 +5,9 @@ export class InvoiceService {
     async createInvoice(LCID: string, userID: string, file: Express.Multer.File) {
         return this.invoiceRepository.createInvoice(LCID, userID, file);
     }
+    async getInvoiceDetail(invoiceID: string) {
+        return this.invoiceRepository.getInvoiceDetail(invoiceID);
+    }
     async approveInvoice(LCID: string, userID: string) {
         return this.invoiceRepository.approveInvoice(LCID, userID);
     }

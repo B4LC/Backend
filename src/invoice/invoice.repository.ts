@@ -21,15 +21,28 @@ export class InvoiceRepository {
       return { message: "Update invoice successfully" };
     } else {
       const newInvoice = new InvoiceModel({
-        file: file.buffer,
+        file: file.path,
         status: InvoiceStatus.USER_UPLOADED,
       });
       await newInvoice.save();
       await LoCModel.updateMany(
-        { ref: newInvoice._id },
-        { $pull: { ref: newInvoice._id } }
+        { _id: curLC._id },
+        { $set: { invoice: newInvoice._id } }
       );
       return { message: "Upload invoice successfully" };
+    }
+  }
+
+  async getInvoiceDetail(invoiceID: string) {
+    const curInvoice = await InvoiceModel.findById(invoiceID);
+    if (curInvoice) {
+      return {
+        hash: curInvoice.hash,
+        file: curInvoice.file,
+        status: curInvoice.status,
+      };
+    } else {
+      throw new NotFoundError("Invoice not found");
     }
   }
 
@@ -43,14 +56,13 @@ export class InvoiceRepository {
       userID !== curSalesContract.advisingBankID.toString()
     ) {
       throw new UnauthorizedError("Unauthorized to approve document");
-    }
-    else if(curLC.invoice) {
-        const curInvoice = await InvoiceModel.findById(curLC.invoice);
-        curInvoice.status = InvoiceStatus.APRROVED;
-        return { message: "Invoice approved"}
-    }
-    else {
-        throw new NotFoundError('Invoice not found');
+    } else if (curLC.invoice) {
+      const curInvoice = await InvoiceModel.findById(curLC.invoice);
+      curInvoice.status = InvoiceStatus.APRROVED;
+      await curInvoice.save();
+      return { message: "Invoice approved" };
+    } else {
+      throw new NotFoundError("Invoice not found");
     }
   }
 
@@ -64,14 +76,13 @@ export class InvoiceRepository {
       userID !== curSalesContract.advisingBankID.toString()
     ) {
       throw new UnauthorizedError("Unauthorized to reject document");
-    }
-    else if(curLC.invoice) {
-        const curInvoice = await InvoiceModel.findById(curLC.invoice);
-        curInvoice.status = InvoiceStatus.REJECTED;
-        return { message: "Invoice rejected"}
-    }
-    else {
-        throw new NotFoundError('Invoice not found');
+    } else if (curLC.invoice) {
+      const curInvoice = await InvoiceModel.findById(curLC.invoice);
+      curInvoice.status = InvoiceStatus.REJECTED;
+      await curInvoice.save();
+      return { message: "Invoice rejected" };
+    } else {
+      throw new NotFoundError("Invoice not found");
     }
   }
 }
