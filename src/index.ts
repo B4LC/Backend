@@ -1,4 +1,4 @@
-import 'reflect-metadata';
+import "reflect-metadata";
 import express, { Request, Response } from "express";
 import mongoose from "mongoose";
 import cookieParser from "cookie-parser";
@@ -11,12 +11,14 @@ import {
 } from "routing-controllers";
 import { verify, decode } from "jsonwebtoken";
 import { isJWT } from "class-validator";
-import { UserModel } from './model';
+import { UserModel } from "./model";
 import { redisClient } from "./config/redis-client";
 import { AuthController } from "./auth/auth.controller";
-import { SalesContractController } from './sales_contract/sales-contract.controller';
-import { LoCController } from './letter_of_credit/letter-of-credit.controller';
-import cors from 'cors';
+import { SalesContractController } from "./sales_contract/sales-contract.controller";
+import { LoCController } from "./letter_of_credit/letter-of-credit.controller";
+import cors from "cors";
+import { InvoiceController } from "./invoice/invoice.controller";
+import { UserController } from "./user/user.controller";
 require("dotenv").config();
 
 async function authorizationChecker(action: Action, roles: string[]) {
@@ -77,7 +79,13 @@ function main() {
     plainToClassTransformOptions: {
       excludeExtraneousValues: true,
     },
-    controllers: [AuthController, SalesContractController, LoCController],
+    controllers: [
+      AuthController,
+      UserController,
+      SalesContractController,
+      LoCController,
+      InvoiceController,
+    ],
     authorizationChecker,
     currentUserChecker,
   };

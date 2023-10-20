@@ -121,9 +121,11 @@ export class LoCRepository {
       },
       invoice: {
         hash: curInvoice?.hash,
-        createdOn: new Date(parseInt(curInvoice?.createdOn)).toDateString(),
-        additionalInfo: curInvoice?.additionalInfo,
-        packageInfo: curInvoice?.packageInfo,
+        file: curInvoice?.file,
+        status: curInvoice?.status,
+        // createdOn: new Date(parseInt(curInvoice?.createdOn)).toDateString(),
+        // additionalInfo: curInvoice?.additionalInfo,
+        // packageInfo: curInvoice?.packageInfo,
       },
       billOfExchange: {
         hash: curBoE?.hash,
