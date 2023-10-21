@@ -19,6 +19,7 @@ import { LoCController } from "./letter_of_credit/letter-of-credit.controller";
 import cors from "cors";
 import { InvoiceController } from "./invoice/invoice.controller";
 import { UserController } from "./user/user.controller";
+import { BoLController } from "./bill_of_lading/bill-of-lading.controller";
 import { BoEController } from "./bill_of_exchange/bill-of-exchange.controller";
 require("dotenv").config();
 
@@ -82,6 +83,7 @@ function main() {
       SalesContractController,
       LoCController,
       InvoiceController,
+      BoLController,
       BoEController,
     ],
     authorizationChecker,
