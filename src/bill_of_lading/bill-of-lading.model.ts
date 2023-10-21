@@ -3,74 +3,81 @@ import { Types } from "mongoose";
 import { User } from "../user/user.model";
 import { BillType } from "./enums/bill-type.enum";
 import { ChargeType } from "./enums/charge-type.enum";
+import { BoLStatus } from "./enums/bill-of-lading.enum";
 
-class Shipper {
-    @prop({required: false})
-    name: string;
+// class Shipper {
+//     @prop({required: false})
+//     name: string;
 
-    @prop({required: false})
-    address: string;
+//     @prop({required: false})
+//     address: string;
 
-    @prop({required: false})
-    phoneNumber: string;
+//     @prop({required: false})
+//     phoneNumber: string;
 
-    @prop({required: false})
-    email: string;
-}
+//     @prop({required: false})
+//     email: string;
+// }
 
-class GoodsDescription {
-    @prop({required: false})
-    name: string;
+// class GoodsDescription {
+//     @prop({required: false})
+//     name: string;
 
-    @prop({required: false})
-    packageNum: number;
+//     @prop({required: false})
+//     packageNum: number;
 
-    @prop({required: false})
-    weight: string;
-}
+//     @prop({required: false})
+//     weight: string;
+// }
 
 export class BillOfLading {
     @prop({required: false})
     hash: string;
 
     @prop({required: true})
-    bookingNo: string;
+    file: string;
 
-    @prop({required: true})
-    voyageNo: string;
+    @prop({required: true, enum: BoLStatus})
+    status: BoLStatus;
 
-    @prop({required: true, enum: BillType})
-    billType: BillType;
+    // @prop({required: true})
+    // bookingNo: string;
 
-    @prop({required: true, enum: ChargeType})
-    freightAndCharge: ChargeType;
+    // @prop({required: true})
+    // voyageNo: string;
 
-    @prop({required: false, type: Shipper})
-    shipper: Shipper;
+    // @prop({required: true, enum: BillType})
+    // billType: BillType;
 
-    @prop({required: true, type: Types.ObjectId, ref: () => User})
-    consignee: Ref<User>
+    // @prop({required: true, enum: ChargeType})
+    // freightAndCharge: ChargeType;
 
-    @prop({required: true, type: Types.ObjectId, ref: () => User})
-    notifyParty: Ref<User>
+    // @prop({required: false, type: Shipper})
+    // shipper: Shipper;
 
-    @prop({required: true})
-    sealNo: string;
+    // @prop({required: true, type: Types.ObjectId, ref: () => User})
+    // consignee: Ref<User>
 
-    @prop({required: true, type: GoodsDescription})
-    goodsDescription: GoodsDescription
+    // @prop({required: true, type: Types.ObjectId, ref: () => User})
+    // notifyParty: Ref<User>
 
-    @prop({required: false})
-    portOfLoading: string;
+    // @prop({required: true})
+    // sealNo: string;
 
-    @prop({required: false})
-    portOfDischarge: string;
+    // @prop({required: true, type: GoodsDescription})
+    // goodsDescription: GoodsDescription
 
-    @prop({required: false})
-    portOfDelivery: string;
+    // @prop({required: false})
+    // portOfLoading: string;
 
-    @prop({required: false})
-    additionalInfo: string;
+    // @prop({required: false})
+    // portOfDischarge: string;
+
+    // @prop({required: false})
+    // portOfDelivery: string;
+
+    // @prop({required: false})
+    // additionalInfo: string;
 }
 
 export type BoLDocument = DocumentType<BillOfLading>;

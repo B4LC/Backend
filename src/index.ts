@@ -19,6 +19,7 @@ import { LoCController } from "./letter_of_credit/letter-of-credit.controller";
 import cors from "cors";
 import { InvoiceController } from "./invoice/invoice.controller";
 import { UserController } from "./user/user.controller";
+import { BoLController } from "bill_of_lading/bill-of-lading.controller";
 require("dotenv").config();
 
 async function authorizationChecker(action: Action, roles: string[]) {
@@ -81,6 +82,7 @@ function main() {
       SalesContractController,
       LoCController,
       InvoiceController,
+      BoLController,
     ],
     authorizationChecker,
     currentUserChecker,
