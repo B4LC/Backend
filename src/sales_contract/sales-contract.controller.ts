@@ -96,7 +96,7 @@ export class SalesContractController {
   @Patch("/:salescontract_id/approve")
   @OpenAPI({ security: [{ BearerAuth: [] }] })
   @Authorized(UserRole.USER)
-  async approveSalesContract(@CurrentUser({required: true}) user: UserDocument, @Param('salescontract_id') salescontract_id: string) {
+  async approveSalesContract(@CurrentUser({required: true}) user: UserDocument, @Param('salescontract_id') salescontract_id: string, @Body() req: any) {
     try {
       return this.salesContractService.approveSalesContract(user._id.toString(), salescontract_id);
     } catch(err) {

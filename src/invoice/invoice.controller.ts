@@ -57,7 +57,8 @@ export class InvoiceController {
   @OpenAPI({ security: [{ BearerAuth: [] }] })
   async approveInvoice(
     @CurrentUser({ required: true }) user: UserDocument,
-    @Param("letterofcredit_id") LCID: string
+    @Param("letterofcredit_id") LCID: string,
+    @Body() req: any
   ) {
     try {
       return this.invoiceService.approveInvoice(LCID, user._id.toString());
@@ -71,7 +72,8 @@ export class InvoiceController {
   @OpenAPI({ security: [{ BearerAuth: [] }] })
   async rejectInvoice(
     @CurrentUser({ required: true }) user: UserDocument,
-    @Param("letterofcredit_id") LCID: string
+    @Param("letterofcredit_id") LCID: string,
+    @Body() req: any
   ) {
     try {
       return this.invoiceService.rejectInvoice(LCID, user._id.toString());

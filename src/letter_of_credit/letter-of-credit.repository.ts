@@ -155,7 +155,13 @@ export class LoCRepository {
 
   async approveLC(userID: string, LCID: string) {
     const curLC = await LoCModel.findById(LCID);
+    if(!curLC) {
+      throw new NotFoundError('LC not found');
+    }
     const curSalesContract = await SalesContractModel.findById(curLC.salesContract);
+    if(!curSalesContract) {
+      throw new NotFoundError('Salescontract not founf');
+    }
     if(curSalesContract.advisingBankID.toString() != userID) throw new UnauthorizedError('Only advising bank can approve');
     curLC.status = LetterOfCreditStatus.ADVISING_BANK_APPROVED;
     return {message: 'LC is approved'};
@@ -163,10 +169,16 @@ export class LoCRepository {
 
   async rejectLC(userID: string, LCID: string) {
     const curLC = await LoCModel.findById(LCID);
+    if(!curLC) {
+      throw new NotFoundError('LC not found');
+    }
     const curSalesContract = await SalesContractModel.findById(curLC.salesContract);
+    if(!curSalesContract) {
+      throw new NotFoundError('Salescontract not founf');
+    }
     if(curSalesContract.advisingBankID.toString() != userID) throw new UnauthorizedError('Only advising bank can approve');
     curLC.status = LetterOfCreditStatus.ADVISING_BANK_REJECTED;
-    return {message: 'LC is approved'};
+    return {message: 'LC is rejected'};
   }
 
   async updateLCStatus(userID: string, LCID: string, newStatus: LetterOfCreditStatus) {

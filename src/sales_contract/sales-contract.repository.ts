@@ -205,6 +205,9 @@ export class SalesContractRepository {
 
   async approveSalesContract(userID: string, salesContractID: string) {
     const curSalesContract = await SalesContractModel.findById(salesContractID);
+    if(!curSalesContract) {
+      throw new NotFoundError('Salescontract not found');
+    }
     if (curSalesContract.exporterID.toString() != userID)
       throw new UnauthorizedError("Only exporter can approve");
     curSalesContract.status = SalesContractStatus.EXPORTER_APPROVED;
@@ -229,6 +232,7 @@ export class SalesContractRepository {
         { ref: salesContractID },
         { $pull: { ref: salesContractID } }
       );
+      return {message: 'Delete salescontract successfully'}
     } catch (err) {
       console.log(err);
     }
