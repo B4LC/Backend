@@ -1,6 +1,7 @@
 import { InvoiceModel, LoCModel, SalesContractModel } from "../model";
 import { NotFoundError, UnauthorizedError } from "routing-controllers";
 import { InvoiceStatus } from "./enums/invoiceStatus.enum";
+import { uploadFile } from "../helper/uploadFile";
 
 export class InvoiceRepository {
   async createInvoice(LCID: string, userID: string, file: Express.Multer.File) {
@@ -59,6 +60,8 @@ export class InvoiceRepository {
     } else if (curLC.invoice) {
       const curInvoice = await InvoiceModel.findById(curLC.invoice);
       curInvoice.status = InvoiceStatus.APRROVED;
+      const cid = await uploadFile(curInvoice.file);
+      curInvoice.hash = cid;
       await curInvoice.save();
       return { message: "Invoice approved" };
     } else {

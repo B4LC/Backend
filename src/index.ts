@@ -30,7 +30,6 @@ async function authorizationChecker(action: Action, roles: string[]) {
   }
   try {
     const user = verify(token, process.env.JWT_SECRET);
-    console.log(user);
     const { username, email, role } = user as Record<string, string>;
     const userTokens = await redisClient.keys(`auth:${email}*`);
     if (!roles.includes(role)) {
@@ -48,11 +47,8 @@ async function currentUserChecker(action: Action) {
   const req: Request = action.request;
   const authHeader = req.headers.authorization;
   const [, token] = authHeader.split(" ");
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const curUser: any = decode(token);
   try {
-    // console.log(curUser);
-    // TODO: in prod: add filter: del_flag:false,status: 1
     const user = await UserModel.findOne({ email: curUser.email }).lean();
     return user;
   } catch (e) {
@@ -90,16 +86,10 @@ function main() {
     currentUserChecker,
   };
   useExpressServer(app, routingControllersOptions);
-  // app.use("/", mainRouter);
   const server = http.createServer(app);
   server.listen(port, () => {
     console.log(`Server is running on port ${port}`);
   });
 }
 main();
-// try {
-//   mongoose.connect(process.env.MONGO_URL).then(() => console.log("connect db successfully"));
-// }
-// catch(err) {
-//   console.log(err);
-// }
+
