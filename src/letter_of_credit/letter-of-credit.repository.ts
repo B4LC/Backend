@@ -129,9 +129,11 @@ export class LoCRepository {
       },
       billOfExchange: {
         hash: curBoE?.hash,
-        issuingDate: new Date(parseInt(curBoE?.issuingDate)).toDateString(),
-        drawerInfo: (await UserModel.findById(curBoE?.drawerInfo))?.username,
-        paymentDeadline: new Date(parseInt(curBoE?.paymentDeadline)).toDateString(),
+        file: curInvoice?.file,
+        status: curInvoice?.status,
+        // issuingDate: new Date(parseInt(curBoE?.issuingDate)).toDateString(),
+        // drawerInfo: (await UserModel.findById(curBoE?.drawerInfo))?.username,
+        // paymentDeadline: new Date(parseInt(curBoE?.paymentDeadline)).toDateString(),
       },
       billOfLading: {
         hash: curBoL?.hash,
