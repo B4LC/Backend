@@ -20,6 +20,7 @@ import { createClient } from "redis";
 export const redisClient = createClient({
   password: password,
   socket: {
+    // family: 6,
     host: host,
     port: port,
   },

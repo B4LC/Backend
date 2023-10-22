@@ -51,12 +51,12 @@ export class BoLController {
     }
   }
 
-  @Patch("/:billoflading_id/approve")
+  @Patch("/:letterofcredit_id/approve")
   @Authorized(UserRole.BANK)
   @OpenAPI({ security: [{ BearerAuth: [] }] })
   async approveBoL(
     @CurrentUser({ required: true }) user: UserDocument,
-    @Param("billoflading_id") LCID: string,
+    @Param("letterofcredit_id") LCID: string,
     @Body() req: any
   ) {
     try {

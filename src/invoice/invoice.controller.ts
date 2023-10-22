@@ -52,12 +52,12 @@ export class InvoiceController {
     }
   }
 
-  @Patch("/:invoice_id/approve")
+  @Patch("/:letterofcredit_id/approve")
   @Authorized(UserRole.BANK)
   @OpenAPI({ security: [{ BearerAuth: [] }] })
   async approveInvoice(
     @CurrentUser({ required: true }) user: UserDocument,
-    @Param("invoice_id") LCID: string,
+    @Param("letterofcredit_id") LCID: string,
     @Body() req: any
   ) {
     try {
@@ -67,12 +67,12 @@ export class InvoiceController {
     }
   }
 
-  @Patch("/:invoice_id/reject")
+  @Patch("/:letterofcredit_id/reject")
   @Authorized(UserRole.BANK)
   @OpenAPI({ security: [{ BearerAuth: [] }] })
   async rejectInvoice(
     @CurrentUser({ required: true }) user: UserDocument,
-    @Param("invoice_id") LCID: string,
+    @Param("letterofcredit_id") LCID: string,
     @Body() req: any
   ) {
     try {
