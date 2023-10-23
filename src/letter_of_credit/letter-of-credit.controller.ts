@@ -10,6 +10,7 @@ import {
   Param,
   Patch,
   Post,
+  Req,
 } from "routing-controllers";
 import { OpenAPI } from "routing-controllers-openapi";
 import { LoCService } from "./letter-of-credit.service";
@@ -42,15 +43,16 @@ export class LoCController {
     }
   }
 
-  @Post("/:salescontract_id/create")
+  @Post("/create")
   @Authorized(UserRole.BANK)
   @OpenAPI({ security: [{ BearerAuth: [] }] })
   async createLC(
     @CurrentUser({ required: true }) user: UserDocument,
-    @Param("salescontract_id") salescontract_id: string
+    @Req() req: any
   ) {
     try {
-      return this.LoCService.createLC(user._id.toString(), salescontract_id);
+      const { contractId, salesContractID } = req.body;
+      return this.LoCService.createLC(user._id.toString(), contractId, salesContractID);
     } catch (err) {
       throw new BadRequestError(err.message);
     }

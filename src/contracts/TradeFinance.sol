@@ -3,23 +3,15 @@ pragma solidity ^0.8.9;
 import "@openzeppelin/contracts/access/Ownable.sol";
 
 contract TradeFinance is Ownable {
-    // struct of parties & assets
-
-    // Bank Structure
-    struct bank {
-        string name;
-        address bankAddress;
-    }
 
     // Sales Contract Structure
     // agreement between buyer and seller
     struct salesContract {
+        uint id;
         string importer;
         string exporter;
         string issuingBank;
         string advisingBank;
-        address issuingBankAddress;
-        address advisingBankAddress;
         string commodity;
         string price;
         string paymentMethod;
@@ -29,6 +21,7 @@ contract TradeFinance is Ownable {
 
     // Letter of Credit Structure
     struct letterOfCredit {
+        uint id;
         uint salesContractID;
         string invoiceHash;
         string billOfExchangeHash;
@@ -39,12 +32,10 @@ contract TradeFinance is Ownable {
     }
 
     // manage parties quantity
-    uint numOfBanks = 0;
     uint numOfSalesContracts = 0;
     uint numOfletterOfCredits = 0;
 
     // store parties
-    mapping(uint => bank) banks;
     mapping(uint => salesContract) salesContracts;
     mapping(uint => letterOfCredit) letterOfCredits;
 
@@ -53,63 +44,24 @@ contract TradeFinance is Ownable {
     event LcCreated(uint lcID, uint salesContractID);
     event DocUploaded(uint lcID);
 
-    //add bank to contract
-    function addBank(
-        string memory name,
-        address bankAddress
-    ) public returns (uint bankID) {
-        bankID = numOfBanks++;
-        bank storage newBank = banks[bankID];
-        newBank.name = name;
-        newBank.bankAddress = bankAddress;
-    }
-
-    function getAllBankAddress()
-        public
-        view
-        onlyOwner
-        returns (address[] memory)
-    {
-        address[] memory bankList = new address[](numOfBanks);
-        for (uint i = 0; i < numOfBanks; i++) {
-            bankList[i] = banks[i].bankAddress;
-        }
-        return bankList;
-    }
-
-    function getBank(
-        uint id
-    ) public view returns (address bankAddress, string memory name) {
-        bankAddress = banks[id].bankAddress;
-        name = banks[id].name;
-    }
-
     // create an agreement between buyer and seller
     function createSalesContract(
         string memory importer,
         string memory exporter,
         string memory issuingBank,
         string memory advisingBank,
-        address issuingBankAddress,
-        address advisingBankAddress,
         string memory commodity,
         string memory price,
         string memory paymentMethod,
         string memory additionalInfo,
         uint deadline
     ) public returns (uint salesContractID) {
-        require(
-            msg.sender == issuingBankAddress,
-            "Only issuing bank can create new salescontract on blockchain"
-        );
         salesContractID = numOfSalesContracts++;
         salesContracts[salesContractID] = salesContract(
             importer,
             exporter,
             issuingBank,
             advisingBank,
-            issuingBankAddress,
-            advisingBankAddress,
             commodity,
             price,
             paymentMethod,
@@ -124,10 +76,6 @@ contract TradeFinance is Ownable {
         uint salesContractID,
         string memory startDate
     ) public returns (uint lcID) {
-        require(
-            msg.sender == salesContracts[salesContractID].issuingBankAddress,
-            "Only issuing bank can create a LC"
-        );
         lcID = numOfletterOfCredits++;
         letterOfCredits[lcID] = letterOfCredit(
             salesContractID,
@@ -143,22 +91,12 @@ contract TradeFinance is Ownable {
 
     function approveLC(uint lcID) public returns (bool sucess) {
         letterOfCredit storage lc = letterOfCredits[lcID];
-        salesContract storage sc = salesContracts[lc.salesContractID];
-        require(
-            msg.sender == sc.advisingBankAddress,
-            "Only advissing bank can change this LC status."
-        );
         lc.lcStatus = "advising_bank_approved";
         return true;
     }
 
     function rejectLC(uint lcID) public returns (bool sucess) {
         letterOfCredit storage lc = letterOfCredits[lcID];
-        salesContract storage sc = salesContracts[lc.salesContractID];
-        require(
-            msg.sender == sc.advisingBankAddress,
-            "Only advissing bank can change this LC status."
-        );
         lc.lcStatus = "advising_bank_rejected";
         return true;
     }
@@ -169,11 +107,6 @@ contract TradeFinance is Ownable {
         string memory status
     ) public returns (bool success) {
         letterOfCredit storage lc = letterOfCredits[lcID];
-        salesContract storage sc = salesContracts[lc.salesContractID];
-        require(
-            msg.sender == sc.advisingBankAddress,
-            "Only advissing bank can change this LC status."
-        );
         lc.lcStatus = status;
         return true;
     }
@@ -186,12 +119,6 @@ contract TradeFinance is Ownable {
         string memory other
     ) public returns (bool success) {
         letterOfCredit storage lc = letterOfCredits[lcID];
-        salesContract storage sc = salesContracts[lc.salesContractID];
-        require(
-            (msg.sender == sc.advisingBankAddress) ||
-                (msg.sender == sc.issuingBankAddress),
-            "Only bank can upload these document."
-        );
         lc.invoiceHash = invoice;
         lc.billOfExchangeHash = exchange;
         lc.billOfLadingHash = lading;

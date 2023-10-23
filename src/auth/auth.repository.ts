@@ -5,6 +5,9 @@ import { redisClient } from "../config/redis-client";
 import { LoginDto } from "./dtos/login.dto";
 import { UserModel } from "../model";
 import { SignupDto } from "./dtos/signup.dto";
+import getContract from "../helper/contract";
+import { ethers } from "ethers";
+import { UserRole } from "../user/enums/user-role.enum";
 require("dotenv").config();
 
 export class AuthRepository {
@@ -41,7 +44,10 @@ export class AuthRepository {
   ) {
     const redisKey = `auth:${email}:${refreshToken}`;
     await redisClient.set(redisKey, accessToken);
-    redisClient.expire(redisKey, Number.parseInt(process.env.JWT_REFRESH_EXPIRES_IN));
+    redisClient.expire(
+      redisKey,
+      Number.parseInt(process.env.JWT_REFRESH_EXPIRES_IN)
+    );
   }
 
   private async removeTokenFromRedis(email: string, refreshToken: string) {
@@ -55,28 +61,27 @@ export class AuthRepository {
         username: 1,
         email: 1,
         password: 1,
-        role: 1
+        role: 1,
       })
       .lean();
   }
 
   async signup(signupDto: SignupDto) {
-    const { username, email, password, role } = signupDto;
-    console.log(password);
-    const user = await UserModel.findOne({email}).exec();
-    if(user) {
-      return { message: 'Email is already taken' };
-    }
-    else {
+    const { contractId, username, email, password, role } = signupDto;
+    const user = await UserModel.findOne({ email }).exec();
+    if (user) {
+      return { message: "Email is already taken" };
+    } else {
       const hashedPassword = this.hashPassword(password, 10);
       const newUser = new UserModel({
+        contractId,
         username,
         email,
         password: hashedPassword,
         role,
       });
       await newUser.save();
-      return { message: 'Register successfully'};
+      return { message: "Register successfully" };
     }
   }
 

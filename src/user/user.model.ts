@@ -7,6 +7,9 @@ import { Invoice } from "../invoice/invoice.model";
 import { BillOfExchange } from "../bill_of_exchange/bill-of-exchange.model";
 import { BillOfLading } from "../bill_of_lading/bill-of-lading.model";
 export class User {
+  @prop({required: false})
+  contractId: string;
+  
   @prop({ required: true })
   username: string;
   
