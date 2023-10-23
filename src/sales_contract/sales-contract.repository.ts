@@ -211,6 +211,7 @@ export class SalesContractRepository {
     if (curSalesContract.exporterID.toString() != userID)
       throw new UnauthorizedError("Only exporter can approve");
     curSalesContract.status = SalesContractStatus.EXPORTER_APPROVED;
+    await curSalesContract.save();
     return { message: "Salescontract is approved" };
   }
 

@@ -19,13 +19,12 @@ export class LoCRepository {
     await user.save();
   }
 
-  async createLC(userID: string, contractId: string, salesContractID: string) {
+  async createLC(userID: string, salesContractID: string) {
     const curSalesContract = await SalesContractModel.findById(salesContractID);
     if (curSalesContract.issuingBankID.toString() != userID) {
       throw new UnauthorizedError("Unauthorized to create LC");
     }
     const newLC = new LoCModel({
-      contractId: contractId,
       salesContract: new mongoose.Types.ObjectId(salesContractID),
       startDate: new Date().getTime().toString(),
       status: LetterOfCreditStatus.CREATED,

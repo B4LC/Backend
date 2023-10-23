@@ -1,0 +1,72 @@
+[{
+  "_id": {
+    "$oid": "65081935dec0169be706c051"
+  },
+  "importerID": {
+    "$oid": "64faf115bc39932b5753ce3a"
+  },
+  "exporterID": {
+    "$oid": "6502d1a9281969b507a1c963"
+  },
+  "issuingBankID": {
+    "$oid": "6502d34e281969b507a1c967"
+  },
+  "advisingBankID": {
+    "$oid": "6502d3bb281969b507a1c96a"
+  },
+  "commodity": "pc",
+  "price": "10000 USD",
+  "paymentMethod": "cash",
+  "additionalInfo": "ship can than a oi",
+  "deadline": "NaN",
+  "status": "created",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "65266acbdc23128bfac7e4c8"
+  },
+  "importerID": {
+    "$oid": "6503d3efd166a994c9e1624d"
+  },
+  "exporterID": {
+    "$oid": "6502d1a9281969b507a1c963"
+  },
+  "issuingBankID": {
+    "$oid": "6502d34e281969b507a1c967"
+  },
+  "advisingBankID": {
+    "$oid": "6502d3bb281969b507a1c96a"
+  },
+  "commodity": "pc",
+  "price": "10000000 VND",
+  "paymentMethod": "cash",
+  "additionalInfo": "need Invoice",
+  "deadline": "1702141200000",
+  "status": "exporter_approved",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "652cfeb2cf05439e09dc265e"
+  },
+  "importerID": {
+    "$oid": "6503d3efd166a994c9e1624d"
+  },
+  "exporterID": {
+    "$oid": "6502d1a9281969b507a1c963"
+  },
+  "issuingBankID": {
+    "$oid": "6502d34e281969b507a1c967"
+  },
+  "advisingBankID": {
+    "$oid": "6502d3bb281969b507a1c96a"
+  },
+  "commodity": "iphone",
+  "price": "10000000 VND",
+  "paymentMethod": "cash",
+  "additionalInfo": "no",
+  "deadline": "1699660800000",
+  "status": "created",
+  "__v": 0
+}]

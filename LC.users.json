@@ -1,0 +1,263 @@
+[{
+  "_id": {
+    "$oid": "64f9b95297234a1b4ee848d6"
+  },
+  "username": "test",
+  "email": "test@gmail.com",
+  "password": "$2b$10$JWeA6ko3wReGYKR2wNeKxubi6NlrY8XReUIc0jG0lGKQ4zwtbxI5u",
+  "role": "user",
+  "agreements": [],
+  "letterOfCredits": [],
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "64f9bb8020fabb867fd55795"
+  },
+  "username": "test",
+  "email": "test@gmail.com",
+  "password": "$2b$10$kOZg96DWEkQ3VcguSK0lR.AoQdmB7truXsXHjReuLHGUAvbmTsOYS",
+  "role": "user",
+  "agreements": [],
+  "letterOfCredits": [],
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "64f9bb913071799ae9f186d0"
+  },
+  "username": "test",
+  "email": "test@gmail.com",
+  "password": "$2b$10$EAFM93ktJDz3MwssQeHoKe/Ebb6.Wa6VDRgmwBDH8S3EmsgEyN2q.",
+  "role": "user",
+  "agreements": [],
+  "letterOfCredits": [],
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "64f9bba02d2347b350143ac0"
+  },
+  "username": "test",
+  "email": "test@gmail.com",
+  "password": "$2b$10$vxaAo8MxOjm5ItmgUKdfhu8VR7lz12P4ihwIUHkbUyZABsDW81tue",
+  "role": "user",
+  "agreements": [],
+  "letterOfCredits": [],
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "64f9bf217e40644532484317"
+  },
+  "username": "test",
+  "email": "test@gmail.com",
+  "password": "$2b$10$Exhdbk8lw6DtI7JLOWRhFuEbhBRBcRKRpA1tDNb6ioo/KzNaIVLFG",
+  "role": "user",
+  "agreements": [],
+  "letterOfCredits": [],
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "64faf115bc39932b5753ce3a"
+  },
+  "username": "BKC Labs",
+  "email": "bkc@gmail.com",
+  "password": "$2b$10$ohSl3pw16lyIFHBmgRSOCegp4tUsgkARJSrlZawuXRlhI.zgcqcUC",
+  "role": "user",
+  "saleContracts": [],
+  "letterOfCredits": [
+    {
+      "$oid": "650bee39fc92668a83bf82af"
+    }
+  ],
+  "__v": 8,
+  "salesContracts": [
+    {
+      "$oid": "65081c3f5dd8a5650258d299"
+    },
+    {
+      "$oid": "650be4ceb5ec13697abf53b5"
+    }
+  ]
+},
+{
+  "_id": {
+    "$oid": "6502d1a9281969b507a1c963"
+  },
+  "username": "An Phat Computer",
+  "email": "anphat@gmail.com",
+  "password": "$2b$10$9GElVfu9wZfx2CUgxSuD/uoNxpwnPjmeF4JUGVptmMIe5PiFrt9gu",
+  "role": "user",
+  "salesContracts": [
+    {
+      "$oid": "65081c3f5dd8a5650258d299"
+    },
+    {
+      "$oid": "650be4ceb5ec13697abf53b5"
+    },
+    {
+      "$oid": "65266acbdc23128bfac7e4c8"
+    },
+    {
+      "$oid": "65266ca69c865a0cae53d76b"
+    },
+    {
+      "$oid": "6526c16546ed5cacbb31010c"
+    },
+    {
+      "$oid": "6526c7da80ffc35dea945211"
+    },
+    {
+      "$oid": "652cfeb2cf05439e09dc265e"
+    }
+  ],
+  "letterOfCredits": [
+    {
+      "$oid": "650bee39fc92668a83bf82af"
+    },
+    {
+      "$oid": "652918003827168a7861f5be"
+    }
+  ],
+  "__v": 10
+},
+{
+  "_id": {
+    "$oid": "6502d34e281969b507a1c967"
+  },
+  "username": "MB Bank",
+  "email": "mb@gmail.com",
+  "password": "$2b$10$XTQ/LuYTUoT61.Q7VxFLR.PeGBMGmtKsQjT46wHbtVB.b6fcyqm6.",
+  "role": "bank",
+  "salesContracts": [
+    {
+      "$oid": "65081c3f5dd8a5650258d299"
+    },
+    {
+      "$oid": "650be4ceb5ec13697abf53b5"
+    },
+    {
+      "$oid": "65266acbdc23128bfac7e4c8"
+    },
+    {
+      "$oid": "65266ca69c865a0cae53d76b"
+    },
+    {
+      "$oid": "6526c16546ed5cacbb31010c"
+    },
+    {
+      "$oid": "6526c7da80ffc35dea945211"
+    },
+    {
+      "$oid": "652cc705b844bc3c1f3b3603"
+    },
+    {
+      "$oid": "652cfeb2cf05439e09dc265e"
+    }
+  ],
+  "letterOfCredits": [
+    {
+      "$oid": "650bee39fc92668a83bf82af"
+    },
+    {
+      "$oid": "652918003827168a7861f5be"
+    }
+  ],
+  "__v": 10
+},
+{
+  "_id": {
+    "$oid": "6502d3bb281969b507a1c96a"
+  },
+  "username": "TP Bank",
+  "email": "tp@gmail.com",
+  "password": "$2b$10$QlzbSK8fVs9go9Shmz79NuIqVLyJHgQrDXVcYEzi3HQYwhG4GkLKW",
+  "role": "bank",
+  "salesContracts": [
+    {
+      "$oid": "65081c3f5dd8a5650258d299"
+    },
+    {
+      "$oid": "650be4ceb5ec13697abf53b5"
+    },
+    {
+      "$oid": "65266acbdc23128bfac7e4c8"
+    },
+    {
+      "$oid": "65266ca69c865a0cae53d76b"
+    },
+    {
+      "$oid": "6526c16546ed5cacbb31010c"
+    },
+    {
+      "$oid": "6526c7da80ffc35dea945211"
+    },
+    {
+      "$oid": "652cc705b844bc3c1f3b3603"
+    },
+    {
+      "$oid": "652cfeb2cf05439e09dc265e"
+    }
+  ],
+  "letterOfCredits": [
+    {
+      "$oid": "652918003827168a7861f5be"
+    }
+  ],
+  "__v": 10
+},
+{
+  "_id": {
+    "$oid": "6503d3efd166a994c9e1624d"
+  },
+  "username": "hust",
+  "email": "hust@gmail.com",
+  "password": "$2b$10$yRKZzkgEewTXuPpUAPhXVO.1RWAKWuV3kuzRs5gE732qSlFBF8L9i",
+  "role": "user",
+  "salesContracts": [
+    {
+      "$oid": "65266acbdc23128bfac7e4c8"
+    },
+    {
+      "$oid": "65266ca69c865a0cae53d76b"
+    },
+    {
+      "$oid": "652cfeb2cf05439e09dc265e"
+    }
+  ],
+  "letterOfCredits": [
+    {
+      "$oid": "652918003827168a7861f5be"
+    }
+  ],
+  "__v": 7,
+  "address": "1st Dai Co Viet street",
+  "phoneNumber": "0123456789"
+},
+{
+  "_id": {
+    "$oid": "652d0c96cb4d335a2a976b1a"
+  },
+  "username": "dang",
+  "email": "dang123@gmail.com",
+  "password": "$2b$10$zXZ1./1/PyyBbGlVxIv/De1LNmPFEBtgxJy3I9D8udzJfLILvO.Qm",
+  "role": "user",
+  "salesContracts": [],
+  "letterOfCredits": [],
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "653650c32458f805a09ccc47"
+  },
+  "contractId": "39",
+  "username": "abc",
+  "email": "abc@gmail.com",
+  "password": "$2b$10$LcRU7bb0HtFw6sRTfkPfdOJbWxwjLEXpv4OjyWUzfn/7LDKOTFT36",
+  "role": "bank",
+  "salesContracts": [],
+  "letterOfCredits": [],
+  "__v": 0
+}]

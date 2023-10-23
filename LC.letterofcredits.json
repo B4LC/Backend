@@ -1,0 +1,34 @@
+[{
+  "_id": {
+    "$oid": "650bee02967a7129bf28ada1"
+  },
+  "status": "created",
+  "salesContracts": [
+    {
+      "$oid": "650be4ceb5ec13697abf53b5"
+    }
+  ],
+  "invoices": [],
+  "billOfLading": [],
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "652918003827168a7861f5be"
+  },
+  "salesContract": {
+    "$oid": "65266ca69c865a0cae53d76b"
+  },
+  "startDate": "1697191936122",
+  "status": "created",
+  "__v": 0,
+  "invoice": {
+    "$oid": "6532559a43cc99edd822cea2"
+  },
+  "billOfExchange": {
+    "$oid": "6533e5be12a516dfbfb57f05"
+  },
+  "billOfLading": {
+    "$oid": "6534cea1739019aa7395a7ce"
+  }
+}]
