@@ -25,7 +25,7 @@ export class SalesContract {
     @prop({required: true})
     paymentMethod: string;
 
-    @prop({required: true})
+    @prop({required: false})
     additionalInfo: string;
 
     @prop({required: true})

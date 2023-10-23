@@ -222,15 +222,27 @@ export class SalesContractRepository {
     )
       throw new MethodNotAllowedError("Cannot delete approved salescontract");
     if (
-      curSalesContract.exporterID.toString() != userID ||
+      curSalesContract.exporterID.toString() != userID &&
       curSalesContract.importerID.toString() != userID
     )
       throw new UnauthorizedError("Unauthorized to delete");
     try {
       await SalesContractModel.findByIdAndDelete(salesContractID);
       await UserModel.updateMany(
-        { ref: salesContractID },
-        { $pull: { ref: salesContractID } }
+        { _id: curSalesContract.importerID },
+        { $pull: { salesContracts: salesContractID } }
+      );
+      await UserModel.updateMany(
+        { _id: curSalesContract.exporterID },
+        { $pull: { salesContracts: salesContractID } }
+      );
+      await UserModel.updateMany(
+        { _id: curSalesContract.issuingBankID },
+        { $pull: { salesContracts: salesContractID } }
+      );
+      await UserModel.updateMany(
+        { _id: curSalesContract.advisingBankID },
+        { $pull: { salesContracts: salesContractID } }
       );
       return {message: 'Delete salescontract successfully'}
     } catch (err) {
