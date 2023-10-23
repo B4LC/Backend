@@ -119,6 +119,9 @@ export class SalesContractRepository {
     const curUser = await UserModel.findById({ _id: userID }).exec();
     for (let salesContractID of curUser.salesContracts) {
       const salesContract = await SalesContractModel.findById(salesContractID);
+      if(!salesContract) {
+        throw new NotFoundError('salescontract not found');
+      }
       // console.log(salesContract);
       const {
         importerID,

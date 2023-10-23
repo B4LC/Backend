@@ -30,6 +30,17 @@ export class UserController {
         }
     }
 
+    @Get("/customers")
+    @OpenAPI({security: [{ BearerAuth: [] }]})
+    async getAllCustomer() {
+        try {
+            return this.userService.getAllCustomer();
+        }
+        catch(err) {
+            throw new BadRequestError(err.message);
+        }
+    }
+
     @Put("/change/profile")
     @OpenAPI({security: [{ BearerAuth: [] }]})
     async changeProfile(@CurrentUser({required: true}) user: UserDocument, @Req() req: any) {

@@ -3,6 +3,9 @@ import { UserRepository } from "./user.repository";
 
 export class UserService {
     private readonly userRepository = new UserRepository();
+    async getAllCustomer() {
+        return this.userRepository.getAllCustomer();
+    }
     async getAllBank() {
         return this.userRepository.getAllBank();
     }
