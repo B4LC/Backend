@@ -70,7 +70,10 @@ export class SalesContractRepository {
     await this.saveSalesContractToUser(importerID, newSaleContract);
     await this.saveSalesContractToUser(issuingBankID, newSaleContract);
     await this.saveSalesContractToUser(advisingBankID, newSaleContract);
-    return { message: "Create salescontract successfully" };
+    return { 
+      message: "Create salescontract successfully",
+      salescontract_id: newSaleContract._id.toString()
+    };
   }
 
   async updateSalesContract(
