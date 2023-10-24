@@ -8,7 +8,7 @@ import { LetterOfCreditStatus } from "./enums/letter-of-credit.enum";
 
 export class LetterOfCredit {
     @prop({required: false})
-    contractId: string;
+    lcId: string;
 
     @prop({type: Types.ObjectId, required: true, ref: () => SalesContract})
     salesContract: Ref<SalesContract>;

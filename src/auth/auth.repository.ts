@@ -72,6 +72,9 @@ export class AuthRepository {
     if (user) {
       return { message: "Email is already taken" };
     } else {
+      let contract = getContract();
+      console.log(contract);
+      
       const hashedPassword = this.hashPassword(password, 10);
       const newUser = new UserModel({
         contractId,

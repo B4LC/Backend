@@ -11,6 +11,7 @@ import {
   UnauthorizedError,
 } from "routing-controllers";
 import { UserRole } from "../user/enums/user-role.enum";
+import getContract from "../helper/contract";
 
 export class SalesContractRepository {
   async findByEmail(email: string): Promise<UserDocument | null> {
@@ -33,6 +34,7 @@ export class SalesContractRepository {
     user.salesContracts.push(salesContract);
     await user.save();
   }
+
   async createSalesContract(createSalesContractDto: SalesContractDto) {
     // console.log(createSalesContractDto);
     const importerID = await this.findIdByUsername(
@@ -54,6 +56,7 @@ export class SalesContractRepository {
     const deadlineTimestamp = new Date(createSalesContractDto.deadline)
       .getTime()
       .toString();
+    
     const newSaleContract = new SalesContractModel({
       exporterID: new mongoose.Types.ObjectId(exporterID),
       importerID: new mongoose.Types.ObjectId(importerID),
@@ -66,11 +69,13 @@ export class SalesContractRepository {
       deadline: deadlineTimestamp,
       status: SalesContractStatus.CREATED,
     });
+
     await newSaleContract.save();
     await this.saveSalesContractToUser(exporterID, newSaleContract);
     await this.saveSalesContractToUser(importerID, newSaleContract);
     await this.saveSalesContractToUser(issuingBankID, newSaleContract);
     await this.saveSalesContractToUser(advisingBankID, newSaleContract);
+
     return {
       message: "Create salescontract successfully",
       salescontract_id: newSaleContract._id.toString(),

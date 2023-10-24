@@ -18,6 +18,7 @@ import { UserRole } from "../user/enums/user-role.enum";
 import { User, UserDocument } from "user/user.model";
 import { UpdateLCDto } from "./dtos/updateLC.dto";
 import { isValidObjectId } from "mongoose";
+import { LetterOfCreditStatus } from "./enums/letter-of-credit.enum";
 
 @JsonController("/letterofcredits")
 export class LoCController {
@@ -64,13 +65,32 @@ export class LoCController {
   async updateLC(
     @CurrentUser({ required: true }) user: UserDocument,
     @Param("letterofcredit_id") letterofcredit_id: string,
-    @Body({}) updateLCDto: UpdateLCDto
+    @Body() updateLCDto: UpdateLCDto
   ) {
     try {
       return this.LoCService.updateLC(
         user._id.toString(),
         letterofcredit_id,
         updateLCDto
+      );
+    } catch (err) {
+      throw new BadRequestError(err.message);
+    }
+  }
+
+  @Patch("/:letterofcredit_id/status")
+  @Authorized(UserRole.BANK)
+  @OpenAPI({ security: [{ BearerAuth: [] }] })
+  async updateLCStatus(
+    @CurrentUser({ required: true }) user: UserDocument,
+    @Param("letterofcredit_id") letterofcredit_id: string,
+    @Req() req: any
+  ) {
+    try {      
+      return this.LoCService.updateLCStatus(
+        user._id.toString(),
+        letterofcredit_id,
+        req.body.status
       );
     } catch (err) {
       throw new BadRequestError(err.message);
