@@ -63,6 +63,7 @@ export class LoCRepository {
       let startDateInDate = new Date(parseInt(LC.startDate)).toDateString();
       console.log(startDateInDate);
       const result = {
+        LCID: LC._id.toString(),
         salesContract: LC.salesContract.toString(),
         invoice: LC.invoice,
         billOfExchange: LC.billOfExchange,
