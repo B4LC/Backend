@@ -5,9 +5,6 @@ import { redisClient } from "../config/redis-client";
 import { LoginDto } from "./dtos/login.dto";
 import { UserModel } from "../model";
 import { SignupDto } from "./dtos/signup.dto";
-import getContract from "../helper/contract";
-import { ethers } from "ethers";
-import { UserRole } from "../user/enums/user-role.enum";
 require("dotenv").config();
 
 export class AuthRepository {
@@ -67,17 +64,13 @@ export class AuthRepository {
   }
 
   async signup(signupDto: SignupDto) {
-    const { contractId, username, email, password, role } = signupDto;
+    const { username, email, password, role } = signupDto;
     const user = await UserModel.findOne({ email }).exec();
     if (user) {
       return { message: "Email is already taken" };
     } else {
-      let contract = getContract();
-      console.log(contract);
-      
       const hashedPassword = this.hashPassword(password, 10);
       const newUser = new UserModel({
-        contractId,
         username,
         email,
         password: hashedPassword,

@@ -3,13 +3,8 @@ import { UserRole } from "./enums/user-role.enum";
 import { ObjectId, Types } from "mongoose";
 import { SalesContract } from "../sales_contract/sales-contract.model";
 import { LetterOfCredit } from "../letter_of_credit/letter-of-credit.model";
-import { Invoice } from "../invoice/invoice.model";
-import { BillOfExchange } from "../bill_of_exchange/bill-of-exchange.model";
-import { BillOfLading } from "../bill_of_lading/bill-of-lading.model";
+
 export class User {
-  @prop({required: false})
-  contractId: string;
-  
   @prop({ required: true })
   username: string;
   

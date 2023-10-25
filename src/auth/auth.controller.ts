@@ -10,7 +10,6 @@ import { OpenAPI } from "routing-controllers-openapi";
 import { LoginDto } from "./dtos/login.dto";
 import { RefreshTokensDto } from "./dtos/refreshTokens.dto";
 import { AuthService } from "./auth.service";
-import { SignupDto } from "./dtos/signup.dto";
 
 @JsonController("/auth")
 export class AuthController {
