@@ -12,6 +12,7 @@ import { createLCDto } from "./dtos/createLC.dto";
 import mongoose from "mongoose";
 import { UpdateLCDto } from "./dtos/updateLC.dto";
 import getContract from "../helper/contract";
+import { SalesContractStatus } from "../sales_contract/enums/sales-contract.enum";
 
 export class LoCRepository {
   async saveLCToUser(id: string, LC: any) {
@@ -69,7 +70,10 @@ export class LoCRepository {
     // save to db
     await SalesContractModel.findByIdAndUpdate(salesContractID, {
       contractId: contractId,
+      status: SalesContractStatus.BANK_APPROVED,
     })
+
+    await curSalesContract.save();
     await newLC.save();
     await this.saveLCToUser(curSalesContract.exporterID.toString(), newLC);
     await this.saveLCToUser(curSalesContract.importerID.toString(), newLC);

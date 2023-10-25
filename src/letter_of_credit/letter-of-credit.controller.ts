@@ -52,8 +52,7 @@ export class LoCController {
     @Req() req: any
   ) {
     try {
-      const { salescontractID } = req.body;
-      return this.LoCService.createLC(user._id.toString(), salescontractID);
+      return this.LoCService.createLC(user._id.toString(), req.body.salesContractID);
     } catch (err) {
       throw new BadRequestError(err.message);
     }
