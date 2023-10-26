@@ -117,6 +117,7 @@ export class LoCRepository {
         otherDocument: LC.otherDocument,
         startDate: startDateInDate,
         status: LC.status,
+        rejectedReason: LC.rejectedReason
       };
       LCs.push(result);
     }
@@ -146,8 +147,14 @@ export class LoCRepository {
     let advisingBank = (
       await UserModel.findById(curSalesContract.advisingBankID)
     ).username;
-    let deadlineInDate = new Date(parseInt(curLC.startDate)).toDateString();
+    let deadlineInDate = new Date(parseInt(curSalesContract.deadline)).toDateString();
+    let startDateInDate = new Date(parseInt(curLC.startDate)).toDateString();
     const result = {
+      letterOfCredit: {
+        status: curLC.status,
+        startDate: startDateInDate,
+        rejectedReason: curLC.rejectedReason,
+      },
       salseContract: {
         importer: importer,
         exporter: exporter,
@@ -161,6 +168,7 @@ export class LoCRepository {
         status: curSalesContract.status,
       },
       invoice: {
+        id: curInvoice._id.toString(),
         hash: curInvoice?.hash,
         file: curInvoice?.file,
         status: curInvoice?.status,
@@ -169,6 +177,7 @@ export class LoCRepository {
         // packageInfo: curInvoice?.packageInfo,
       },
       billOfExchange: {
+        id: curBoE._id.toString(),
         hash: curBoE?.hash,
         file: curInvoice?.file,
         status: curInvoice?.status,
@@ -177,6 +186,7 @@ export class LoCRepository {
         // paymentDeadline: new Date(parseInt(curBoE?.paymentDeadline)).toDateString(),
       },
       billOfLading: {
+        id: curBoL._id.toString(),
         hash: curBoL?.hash,
         file: curBoL?.file,
         status: curBoL?.status,
@@ -205,28 +215,32 @@ export class LoCRepository {
     }
     const curSalesContract = await SalesContractModel.findById(curLC.salesContract);
     if(!curSalesContract) {
-      throw new NotFoundError('Salescontract not founf');
+      throw new NotFoundError('Salescontract not found');
     }
     if(curSalesContract.advisingBankID.toString() != userID) throw new UnauthorizedError('Only advising bank can approve');
     let contract = getContract();
     await contract.approveLC(parseInt(curLC.lcId));
     curLC.status = LetterOfCreditStatus.ADVISING_BANK_APPROVED;
+    curLC.rejectedReason = "";
+    await curLC.save();
     return {message: 'LC is approved'};
   }
 
-  async rejectLC(userID: string, LCID: string) {
+  async rejectLC(userID: string, LCID: string, reason: string) {
     const curLC = await LoCModel.findById(LCID);
     if(!curLC) {
       throw new NotFoundError('LC not found');
     }
     const curSalesContract = await SalesContractModel.findById(curLC.salesContract);
     if(!curSalesContract) {
-      throw new NotFoundError('Salescontract not founf');
+      throw new NotFoundError('Salescontract not found');
     }
     if(curSalesContract.advisingBankID.toString() != userID) throw new UnauthorizedError('Only advising bank can approve');
     let contract = getContract();
     await contract.rejectLC(parseInt(curLC.lcId));
     curLC.status = LetterOfCreditStatus.ADVISING_BANK_REJECTED;
+    curLC.rejectedReason = reason;
+    await curLC.save();
     return {message: 'LC is rejected'};
   }
 

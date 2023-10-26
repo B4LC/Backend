@@ -1,7 +1,8 @@
 import { BoEModel, LoCModel, SalesContractModel } from "../model";
 import { NotFoundError, UnauthorizedError } from "routing-controllers";
-import { uploadFile } from "../helper/uploadFile";
+import { uploadDocument, uploadFile } from "../helper/uploadFile";
 import { BoEStatus } from "./enums/bill-of-exchange-status.enum";
+import getContract from "helper/contract";
 
 export class BoERepository {
   async createBoE(LCID: string, userID: string, file: Express.Multer.File) {
@@ -49,9 +50,11 @@ export class BoERepository {
 
   async approveBoE(LCID: string, userID: string) {
     const curLC = await LoCModel.findById(LCID);
+    if(!curLC) throw new NotFoundError('Letter of credit not found');
     const curSalesContract = await SalesContractModel.findById(
       curLC.salesContract
     );
+    if(!curSalesContract) throw new NotFoundError('Sales contract not found');
     if (
       userID !== curSalesContract.issuingBankID.toString() &&
       userID !== curSalesContract.advisingBankID.toString()
@@ -60,9 +63,11 @@ export class BoERepository {
     } else if (curLC.billOfExchange) {
       const curBoE = await BoEModel.findById(curLC.billOfExchange);
       curBoE.status = BoEStatus.APRROVED;
+      // save to ipfs
       const cid = await uploadFile(curBoE.file);
       curBoE.hash = cid;
       await curBoE.save();
+      await uploadDocument(curLC);
       return { message: "bill of exchange approved" };
     } else {
       throw new NotFoundError("bill of exchange not found");

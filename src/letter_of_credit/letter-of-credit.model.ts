@@ -30,6 +30,9 @@ export class LetterOfCredit {
 
     @prop({required: true, enum: LetterOfCreditStatus})
     status: LetterOfCreditStatus;
+
+    @prop({required: false})
+    rejectedReason: string;
 }
 export type LoCDocument = DocumentType<LetterOfCredit>;
 // export const LCModel = getModelForClass(LetterOfCredit);

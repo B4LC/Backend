@@ -123,7 +123,9 @@ export class LoCController {
   @OpenAPI({ security: [{ BearerAuth: [] }] })
   async rejectLC(@CurrentUser({required: true}) user: UserDocument, @Param('letterofcredit_id') LCID: string, @Body() req: any) {
     try {
-      return this.LoCService.rejectLC(user._id.toString(), LCID);
+      console.log(req);
+      
+      return this.LoCService.rejectLC(user._id.toString(), LCID, req.reason);
     }
     catch(err) {
       throw new BadRequestError(err.message);

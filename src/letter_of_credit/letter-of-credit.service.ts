@@ -25,8 +25,8 @@ export class LoCService {
         return this.LoCRepository.approveLC(userID, LCID);
     }
 
-    async rejectLC(userID: string, LCID: string) {
-        return this.LoCRepository.rejectLC(userID, LCID);
+    async rejectLC(userID: string, LCID: string, reason: string) {
+        return this.LoCRepository.rejectLC(userID, LCID, reason);
     }
 
     async updateLCStatus(userID: string, LCID: string, newStatus: LetterOfCreditStatus) {

@@ -1,6 +1,6 @@
 import { BoLModel, LoCModel, SalesContractModel } from "../model";
 import { NotFoundError, UnauthorizedError } from "routing-controllers";
-import { uploadFile } from "../helper/uploadFile";
+import { uploadDocument, uploadFile } from "../helper/uploadFile";
 import { BoLStatus } from "./enums/bill-of-lading.enum";
 
 export class BoLRepository {
@@ -63,6 +63,7 @@ export class BoLRepository {
       const cid = await uploadFile(curBoL.file);
       curBoL.hash = cid;
       await curBoL.save();
+      await uploadDocument(curLC);
       return { message: "bill of lading approved" };
     } else {
       throw new NotFoundError("bill of lading not found");
