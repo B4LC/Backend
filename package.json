@@ -18,6 +18,7 @@
     "@types/cookie-parser": "^1.4.4",
     "@types/cors": "^2.8.14",
     "@types/express": "^4.17.17",
+    "@types/graceful-fs": "^4.1.8",
     "@types/jsonwebtoken": "^9.0.2",
     "@types/mongoose": "^5.11.97",
     "@types/multer": "^1.4.9",
