@@ -5,6 +5,7 @@ import { LoCDocument } from "../letter_of_credit/letter-of-credit.model";
 import { InvoiceStatus } from "../invoice/enums/invoiceStatus.enum";
 import { BoEStatus } from "../bill_of_exchange/enums/bill-of-exchange-status.enum";
 import { BoLStatus } from "../bill_of_lading/enums/bill-of-lading.enum";
+import { LetterOfCreditStatus } from "../letter_of_credit/enums/letter-of-credit.enum";
 
 export async function uploadFile(filePath: string) {
     const cid = await saveToIPFS(filePath);
@@ -19,5 +20,7 @@ export async function uploadDocument(curLC: LoCDocument) {
         let contract = getContract();
         // console.log(contract);
         await contract.uploadDocument(parseInt(curLC.lcId), curInvoice.hash, curBoE.hash, curBoL.hash, "");
+        curLC.status = LetterOfCreditStatus.DOCUMENT_UPLOADED;
+        await curLC.save();
     }
 }
