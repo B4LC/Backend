@@ -107,7 +107,7 @@ export class LoCRepository {
     for (let id of curUser.letterOfCredits) {
       const LC = await LoCModel.findById(id);
       let startDateInDate = new Date(parseInt(LC.startDate)).toDateString();
-      console.log(startDateInDate);
+      // console.log(startDateInDate);
       const result = {
         LCID: LC._id.toString(),
         salesContract: LC.salesContract.toString(),
@@ -135,6 +135,7 @@ export class LoCRepository {
     const curSalesContract = await SalesContractModel.findById(
       curLC.salesContract
     );
+    if(!curSalesContract) throw new NotFoundError('Sales contract not found')
     const curInvoice = await InvoiceModel.findById(curLC.invoice);
     const curBoE = await BoEModel.findById(curLC.billOfExchange);
     const curBoL = await BoLModel.findById(curLC.billOfLading);
@@ -168,7 +169,7 @@ export class LoCRepository {
         status: curSalesContract.status,
       },
       invoice: {
-        id: curInvoice._id.toString(),
+        id: curInvoice?._id.toString(),
         hash: curInvoice?.hash,
         file: curInvoice?.file,
         status: curInvoice?.status,
@@ -177,7 +178,7 @@ export class LoCRepository {
         // packageInfo: curInvoice?.packageInfo,
       },
       billOfExchange: {
-        id: curBoE._id.toString(),
+        id: curBoE?._id.toString(),
         hash: curBoE?.hash,
         file: curInvoice?.file,
         status: curInvoice?.status,
@@ -186,7 +187,7 @@ export class LoCRepository {
         // paymentDeadline: new Date(parseInt(curBoE?.paymentDeadline)).toDateString(),
       },
       billOfLading: {
-        id: curBoL._id.toString(),
+        id: curBoL?._id.toString(),
         hash: curBoL?.hash,
         file: curBoL?.file,
         status: curBoL?.status,
