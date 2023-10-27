@@ -12,6 +12,14 @@ export class UserRepository {
         })
         return res;
     }
+    async getAllCustomer() {
+        const banks = await UserModel.find({role: UserRole.USER});
+        const res: any[] = []
+        banks.forEach((bank) => {
+            res.push(bank.username)
+        })
+        return res;
+    }
     async changeProfile(userID: string, userProfile: ChangeProfile) {
         const curUser = await UserModel.findById(userID);
         if(!curUser) {

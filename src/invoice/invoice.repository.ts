@@ -1,7 +1,9 @@
 import { InvoiceModel, LoCModel, SalesContractModel } from "../model";
 import { NotFoundError, UnauthorizedError } from "routing-controllers";
 import { InvoiceStatus } from "./enums/invoiceStatus.enum";
-import { uploadFile } from "../helper/uploadFile";
+import { uploadDocument, uploadFile } from "../helper/uploadFile";
+require("dotenv").config();
+import uploadToCloudinary from "../config/cloudinary";
 
 export class InvoiceRepository {
   async createInvoice(LCID: string, userID: string, file: Express.Multer.File) {
@@ -15,14 +17,16 @@ export class InvoiceRepository {
     ) {
       throw new UnauthorizedError("Unauthorized to upload document");
     }
+    
+    const result = await uploadToCloudinary(curLC._id.toString(), file);
     if (curLC.invoice) {
       const curInvoice = await InvoiceModel.findById(curLC.invoice);
-      curInvoice.file = file.path;
+      curInvoice.file = result.secure_url;
       await curInvoice.save();
       return { message: "Update invoice successfully" };
     } else {
       const newInvoice = new InvoiceModel({
-        file: file.path,
+        file: result.secure_url,
         status: InvoiceStatus.USER_UPLOADED,
       });
       await newInvoice.save();
@@ -60,9 +64,11 @@ export class InvoiceRepository {
     } else if (curLC.invoice) {
       const curInvoice = await InvoiceModel.findById(curLC.invoice);
       curInvoice.status = InvoiceStatus.APRROVED;
+      // save to ipfs
       const cid = await uploadFile(curInvoice.file);
       curInvoice.hash = cid;
       await curInvoice.save();
+      await uploadDocument(curLC);
       return { message: "Invoice approved" };
     } else {
       throw new NotFoundError("Invoice not found");

@@ -10,6 +10,8 @@ import {
   NotFoundError,
   UnauthorizedError,
 } from "routing-controllers";
+import { UserRole } from "../user/enums/user-role.enum";
+import getContract from "../helper/contract";
 
 export class SalesContractRepository {
   async findByEmail(email: string): Promise<UserDocument | null> {
@@ -32,6 +34,7 @@ export class SalesContractRepository {
     user.salesContracts.push(salesContract);
     await user.save();
   }
+
   async createSalesContract(createSalesContractDto: SalesContractDto) {
     // console.log(createSalesContractDto);
     const importerID = await this.findIdByUsername(
@@ -53,6 +56,7 @@ export class SalesContractRepository {
     const deadlineTimestamp = new Date(createSalesContractDto.deadline)
       .getTime()
       .toString();
+    
     const newSaleContract = new SalesContractModel({
       exporterID: new mongoose.Types.ObjectId(exporterID),
       importerID: new mongoose.Types.ObjectId(importerID),
@@ -65,12 +69,17 @@ export class SalesContractRepository {
       deadline: deadlineTimestamp,
       status: SalesContractStatus.CREATED,
     });
+
     await newSaleContract.save();
     await this.saveSalesContractToUser(exporterID, newSaleContract);
     await this.saveSalesContractToUser(importerID, newSaleContract);
     await this.saveSalesContractToUser(issuingBankID, newSaleContract);
     await this.saveSalesContractToUser(advisingBankID, newSaleContract);
-    return { message: "Create salescontract successfully" };
+
+    return {
+      message: "Create salescontract successfully",
+      salescontract_id: newSaleContract._id.toString(),
+    };
   }
 
   async updateSalesContract(
@@ -114,48 +123,131 @@ export class SalesContractRepository {
   }
 
   async getAllSalesContract(userID: string) {
-    // console.log(userID);
-    const agreements = [];
     const curUser = await UserModel.findById({ _id: userID }).exec();
-    for (let salesContractID of curUser.salesContracts) {
-      const salesContract = await SalesContractModel.findById(salesContractID);
-      // console.log(salesContract);
-      const {
-        importerID,
-        exporterID,
-        issuingBankID,
-        advisingBankID,
-        commodity,
-        price,
-        paymentMethod,
-        additionalInfo,
-        deadline,
-        status,
-      } = salesContract;
-      // console.log(importerID);
-      let importer = (await UserModel.findById(importerID)).username;
-      let exporter = (await UserModel.findById(exporterID)).username;
-      let issuingBank = (await UserModel.findById(issuingBankID)).username;
-      let advisingBank = (await UserModel.findById(advisingBankID)).username;
-      let deadlineInDate = new Date(parseInt(deadline)).toDateString();
-      // console.log(importer);
-      const result = {
-        salescontract_id: salesContractID.toString(),
-        importer: importer,
-        exporter: exporter,
-        issuingBank: issuingBank,
-        advisingBank: advisingBank,
-        commodity: commodity,
-        price: price,
-        paymentMethod: paymentMethod,
-        additionalInfo: additionalInfo,
-        deadlineInDate: deadlineInDate,
-        status: status,
-      };
-      agreements.push(result);
-      // console.log(salesContract);
+    if (curUser.role == UserRole.BANK) {
+      const agreements: {
+        salescontract_id: string;
+        importer: string;
+        exporter: string;
+        issuingBank: string;
+        advisingBank: string;
+        commodity: string;
+        price: string;
+        paymentMethod: string;
+        additionalInfo: string;
+        deadlineInDate: string;
+        status: SalesContractStatus;
+      }[] = [];
+
+      const salesContractPromises = curUser.salesContracts.map(
+        async (salesContractID) => {
+          const salesContract = await SalesContractModel.findById(
+            salesContractID
+          );
+          if (!salesContract) {
+            throw new NotFoundError("salescontract not found");
+          } else if (
+            salesContract.status == SalesContractStatus.EXPORTER_APPROVED
+          ) {
+            const {
+              importerID,
+              exporterID,
+              issuingBankID,
+              advisingBankID,
+              commodity,
+              price,
+              paymentMethod,
+              additionalInfo,
+              deadline,
+              status,
+            } = salesContract;
+
+            let importer = (await UserModel.findById(importerID)).username;
+            let exporter = (await UserModel.findById(exporterID)).username;
+            let issuingBank = (await UserModel.findById(issuingBankID))
+              .username;
+            let advisingBank = (await UserModel.findById(advisingBankID))
+              .username;
+
+            const deadlineInDate = new Date(parseInt(deadline)).toDateString();
+
+            const result = {
+              salescontract_id: salesContractID.toString(),
+              importer: importer,
+              exporter: exporter,
+              issuingBank: issuingBank,
+              advisingBank: advisingBank,
+              commodity: commodity,
+              price: price,
+              paymentMethod: paymentMethod,
+              additionalInfo: additionalInfo,
+              deadlineInDate: deadlineInDate,
+              status: status,
+            };
+            agreements.push(result);
+          }
+        }
+      );
+      await Promise.all(salesContractPromises);
+      return agreements;
+    } else {
+      const agreements: {
+        salescontract_id: string;
+        importer: string;
+        exporter: string;
+        issuingBank: string;
+        advisingBank: string;
+        commodity: string;
+        price: string;
+        paymentMethod: string;
+        additionalInfo: string;
+        deadlineInDate: string;
+        status: SalesContractStatus;
+      }[] = [];
+      for (let salesContractID of curUser.salesContracts) {
+        const salesContract = await SalesContractModel.findById(
+          salesContractID
+        );
+        if (!salesContract) {
+          throw new NotFoundError("salescontract not found");
+        }
+        // console.log(salesContract);
+        const {
+          importerID,
+          exporterID,
+          issuingBankID,
+          advisingBankID,
+          commodity,
+          price,
+          paymentMethod,
+          additionalInfo,
+          deadline,
+          status,
+        } = salesContract;
+        // console.log(importerID);
+        let importer = (await UserModel.findById(importerID)).username;
+        let exporter = (await UserModel.findById(exporterID)).username;
+        let issuingBank = (await UserModel.findById(issuingBankID)).username;
+        let advisingBank = (await UserModel.findById(advisingBankID)).username;
+        let deadlineInDate = new Date(parseInt(deadline)).toDateString();
+        // console.log(importer);
+        const result = {
+          salescontract_id: salesContractID.toString(),
+          importer: importer,
+          exporter: exporter,
+          issuingBank: issuingBank,
+          advisingBank: advisingBank,
+          commodity: commodity,
+          price: price,
+          paymentMethod: paymentMethod,
+          additionalInfo: additionalInfo,
+          deadlineInDate: deadlineInDate,
+          status: status,
+        };
+        agreements.push(result);
+      }
+      return agreements;
     }
-    return agreements;
   }
 
   async getSalesContractDetail(userID: string, salesContractID: string) {
@@ -205,12 +297,13 @@ export class SalesContractRepository {
 
   async approveSalesContract(userID: string, salesContractID: string) {
     const curSalesContract = await SalesContractModel.findById(salesContractID);
-    if(!curSalesContract) {
-      throw new NotFoundError('Salescontract not found');
+    if (!curSalesContract) {
+      throw new NotFoundError("Salescontract not found");
     }
     if (curSalesContract.exporterID.toString() != userID)
       throw new UnauthorizedError("Only exporter can approve");
     curSalesContract.status = SalesContractStatus.EXPORTER_APPROVED;
+    await curSalesContract.save();
     return { message: "Salescontract is approved" };
   }
 
@@ -222,17 +315,29 @@ export class SalesContractRepository {
     )
       throw new MethodNotAllowedError("Cannot delete approved salescontract");
     if (
-      curSalesContract.exporterID.toString() != userID ||
+      curSalesContract.exporterID.toString() != userID &&
       curSalesContract.importerID.toString() != userID
     )
       throw new UnauthorizedError("Unauthorized to delete");
     try {
       await SalesContractModel.findByIdAndDelete(salesContractID);
       await UserModel.updateMany(
-        { ref: salesContractID },
-        { $pull: { ref: salesContractID } }
+        { _id: curSalesContract.importerID },
+        { $pull: { salesContracts: salesContractID } }
       );
-      return {message: 'Delete salescontract successfully'}
+      await UserModel.updateMany(
+        { _id: curSalesContract.exporterID },
+        { $pull: { salesContracts: salesContractID } }
+      );
+      await UserModel.updateMany(
+        { _id: curSalesContract.issuingBankID },
+        { $pull: { salesContracts: salesContractID } }
+      );
+      await UserModel.updateMany(
+        { _id: curSalesContract.advisingBankID },
+        { $pull: { salesContracts: salesContractID } }
+      );
+      return { message: "Delete salescontract successfully" };
     } catch (err) {
       console.log(err);
     }

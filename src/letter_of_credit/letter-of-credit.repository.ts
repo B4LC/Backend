@@ -11,6 +11,8 @@ import { LetterOfCreditStatus } from "./enums/letter-of-credit.enum";
 import { createLCDto } from "./dtos/createLC.dto";
 import mongoose from "mongoose";
 import { UpdateLCDto } from "./dtos/updateLC.dto";
+import getContract from "../helper/contract";
+import { SalesContractStatus } from "../sales_contract/enums/sales-contract.enum";
 
 export class LoCRepository {
   async saveLCToUser(id: string, LC: any) {
@@ -24,20 +26,60 @@ export class LoCRepository {
     if (curSalesContract.issuingBankID.toString() != userID) {
       throw new UnauthorizedError("Unauthorized to create LC");
     }
+
+    const startDate = new Date().getTime().toString();
+    // store salescontract and LC in contract
+    let contract = getContract();
+    const salesContractCreatedPromise = new Promise<number>((resolve) => {
+      contract.on("SalesContractCreated", (salesContractID) => {
+        const contractId = parseInt(salesContractID._hex, 16);
+        resolve(contractId);
+      });
+    });
+
+    const LcCreatedPromise = new Promise<number>((resolve) => {
+      contract.on("LcCreated", (LCID, salesContractID) => {
+        const lcId = parseInt(LCID._hex, 16);
+        resolve(lcId);
+      });
+    })
+
+    await contract.createSalesContract(
+      (await UserModel.findById(curSalesContract.importerID)).username,
+      (await UserModel.findById(curSalesContract.exporterID)).username,
+      (await UserModel.findById(curSalesContract.issuingBankID)).username,
+      (await UserModel.findById(curSalesContract.advisingBankID)).username,
+      curSalesContract.commodity,
+      curSalesContract.price,
+      curSalesContract.paymentMethod,
+      curSalesContract.additionalInfo,
+      curSalesContract.deadline
+    )
+
+    const contractId = await salesContractCreatedPromise;
+    await contract.createLC(contractId, startDate);
+    const lcId = await LcCreatedPromise;
+
     const newLC = new LoCModel({
+      lcId: lcId,
       salesContract: new mongoose.Types.ObjectId(salesContractID),
-      // invoice: null,
-      // billOfExchange: null,
-      // billOfLading: null,
-      // otherDocument: null,
-      startDate: new Date().getTime().toString(),
+      startDate: startDate,
       status: LetterOfCreditStatus.CREATED,
     });
+
+    // save to db
+    await SalesContractModel.findByIdAndUpdate(salesContractID, {
+      contractId: contractId,
+      status: SalesContractStatus.BANK_APPROVED,
+    })
+
+    await curSalesContract.save();
     await newLC.save();
     await this.saveLCToUser(curSalesContract.exporterID.toString(), newLC);
     await this.saveLCToUser(curSalesContract.importerID.toString(), newLC);
     await this.saveLCToUser(curSalesContract.issuingBankID.toString(), newLC);
     await this.saveLCToUser(curSalesContract.advisingBankID.toString(), newLC);
+
     return { message: "Create LC successfully" };
   }
 
@@ -46,8 +88,6 @@ export class LoCRepository {
     const curSalesContract = await SalesContractModel.findById(
       curLC.salesContract
     );
-    // console.log(userID);
-    // console.log(curSalesContract);
     if (
       curSalesContract.issuingBankID.toString() != userID &&
       curSalesContract.advisingBankID.toString() != userID
@@ -67,8 +107,9 @@ export class LoCRepository {
     for (let id of curUser.letterOfCredits) {
       const LC = await LoCModel.findById(id);
       let startDateInDate = new Date(parseInt(LC.startDate)).toDateString();
-      console.log(startDateInDate);
+      // console.log(startDateInDate);
       const result = {
+        LCID: LC._id.toString(),
         salesContract: LC.salesContract.toString(),
         invoice: LC.invoice,
         billOfExchange: LC.billOfExchange,
@@ -76,6 +117,7 @@ export class LoCRepository {
         otherDocument: LC.otherDocument,
         startDate: startDateInDate,
         status: LC.status,
+        rejectedReason: LC.rejectedReason
       };
       LCs.push(result);
     }
@@ -93,6 +135,7 @@ export class LoCRepository {
     const curSalesContract = await SalesContractModel.findById(
       curLC.salesContract
     );
+    if(!curSalesContract) throw new NotFoundError('Sales contract not found')
     const curInvoice = await InvoiceModel.findById(curLC.invoice);
     const curBoE = await BoEModel.findById(curLC.billOfExchange);
     const curBoL = await BoLModel.findById(curLC.billOfLading);
@@ -105,8 +148,14 @@ export class LoCRepository {
     let advisingBank = (
       await UserModel.findById(curSalesContract.advisingBankID)
     ).username;
-    let deadlineInDate = new Date(parseInt(curLC.startDate)).toDateString();
+    let deadlineInDate = new Date(parseInt(curSalesContract.deadline)).toDateString();
+    let startDateInDate = new Date(parseInt(curLC.startDate)).toDateString();
     const result = {
+      letterOfCredit: {
+        status: curLC.status,
+        startDate: startDateInDate,
+        rejectedReason: curLC.rejectedReason,
+      },
       salseContract: {
         importer: importer,
         exporter: exporter,
@@ -120,6 +169,7 @@ export class LoCRepository {
         status: curSalesContract.status,
       },
       invoice: {
+        id: curInvoice?._id.toString(),
         hash: curInvoice?.hash,
         file: curInvoice?.file,
         status: curInvoice?.status,
@@ -128,6 +178,7 @@ export class LoCRepository {
         // packageInfo: curInvoice?.packageInfo,
       },
       billOfExchange: {
+        id: curBoE?._id.toString(),
         hash: curBoE?.hash,
         file: curInvoice?.file,
         status: curInvoice?.status,
@@ -136,6 +187,7 @@ export class LoCRepository {
         // paymentDeadline: new Date(parseInt(curBoE?.paymentDeadline)).toDateString(),
       },
       billOfLading: {
+        id: curBoL?._id.toString(),
         hash: curBoL?.hash,
         file: curBoL?.file,
         status: curBoL?.status,
@@ -164,24 +216,32 @@ export class LoCRepository {
     }
     const curSalesContract = await SalesContractModel.findById(curLC.salesContract);
     if(!curSalesContract) {
-      throw new NotFoundError('Salescontract not founf');
+      throw new NotFoundError('Salescontract not found');
     }
     if(curSalesContract.advisingBankID.toString() != userID) throw new UnauthorizedError('Only advising bank can approve');
+    let contract = getContract();
+    await contract.approveLC(parseInt(curLC.lcId));
     curLC.status = LetterOfCreditStatus.ADVISING_BANK_APPROVED;
+    curLC.rejectedReason = "";
+    await curLC.save();
     return {message: 'LC is approved'};
   }
 
-  async rejectLC(userID: string, LCID: string) {
+  async rejectLC(userID: string, LCID: string, reason: string) {
     const curLC = await LoCModel.findById(LCID);
     if(!curLC) {
       throw new NotFoundError('LC not found');
     }
     const curSalesContract = await SalesContractModel.findById(curLC.salesContract);
     if(!curSalesContract) {
-      throw new NotFoundError('Salescontract not founf');
+      throw new NotFoundError('Salescontract not found');
     }
     if(curSalesContract.advisingBankID.toString() != userID) throw new UnauthorizedError('Only advising bank can approve');
+    let contract = getContract();
+    await contract.rejectLC(parseInt(curLC.lcId));
     curLC.status = LetterOfCreditStatus.ADVISING_BANK_REJECTED;
+    curLC.rejectedReason = reason;
+    await curLC.save();
     return {message: 'LC is rejected'};
   }
 
@@ -196,6 +256,8 @@ export class LoCRepository {
     ) {
       throw new UnauthorizedError("Unauthorized to update LC");
     }
+    let contract = getContract();
+    await contract.changeLcStatus(curLC.lcId, newStatus);
     await LoCModel.findByIdAndUpdate(LCID, {
       status: newStatus,
     });

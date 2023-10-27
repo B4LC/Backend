@@ -41,7 +41,10 @@ export class AuthRepository {
   ) {
     const redisKey = `auth:${email}:${refreshToken}`;
     await redisClient.set(redisKey, accessToken);
-    redisClient.expire(redisKey, Number.parseInt(process.env.JWT_REFRESH_EXPIRES_IN));
+    redisClient.expire(
+      redisKey,
+      Number.parseInt(process.env.JWT_REFRESH_EXPIRES_IN)
+    );
   }
 
   private async removeTokenFromRedis(email: string, refreshToken: string) {
@@ -55,19 +58,17 @@ export class AuthRepository {
         username: 1,
         email: 1,
         password: 1,
-        role: 1
+        role: 1,
       })
       .lean();
   }
 
   async signup(signupDto: SignupDto) {
     const { username, email, password, role } = signupDto;
-    console.log(password);
-    const user = await UserModel.findOne({email}).exec();
-    if(user) {
-      return { message: 'Email is already taken' };
-    }
-    else {
+    const user = await UserModel.findOne({ email }).exec();
+    if (user) {
+      return { message: "Email is already taken" };
+    } else {
       const hashedPassword = this.hashPassword(password, 10);
       const newUser = new UserModel({
         username,
@@ -76,7 +77,7 @@ export class AuthRepository {
         role,
       });
       await newUser.save();
-      return { message: 'Register successfully'};
+      return { message: "Register successfully" };
     }
   }
 

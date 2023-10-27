@@ -14,7 +14,7 @@ import {
 import { UserRole } from "../user/enums/user-role.enum";
 import { OpenAPI } from "routing-controllers-openapi";
 import { UserDocument } from "../user/user.model";
-import { fileUploadOptions } from "../config/multer";
+// import { fileUploadOptions } from "../config/multer";
 import { BoLService } from "./bill-of-lading.service";
 
 @JsonController("/billofladings")
@@ -27,7 +27,7 @@ export class BoLController {
   async createBoL(
     @CurrentUser({ required: true }) user: UserDocument,
     @Req() req: any,
-    @UploadedFile("bill_of_lading", { options: fileUploadOptions })
+    @UploadedFile("bill_of_lading")
     file: Express.Multer.File
   ) {
     try {

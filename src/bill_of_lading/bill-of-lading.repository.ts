@@ -1,7 +1,9 @@
 import { BoLModel, LoCModel, SalesContractModel } from "../model";
 import { NotFoundError, UnauthorizedError } from "routing-controllers";
-import { uploadFile } from "../helper/uploadFile";
+import { uploadDocument, uploadFile } from "../helper/uploadFile";
 import { BoLStatus } from "./enums/bill-of-lading.enum";
+require("dotenv").config();
+import uploadToCloudinary from "../config/cloudinary";
 
 export class BoLRepository {
   async createBoL(LCID: string, userID: string, file: Express.Multer.File) {
@@ -15,14 +17,15 @@ export class BoLRepository {
     ) {
       throw new UnauthorizedError("Unauthorized to upload document");
     }
+    const result = await uploadToCloudinary(curLC._id.toString(), file);
     if (curLC.billOfLading) {
       const curBoL = await BoLModel.findById(curLC.billOfLading);
-      curBoL.file = file.path;
+      curBoL.file = result.secure_url;
       await curBoL.save();
       return { message: "Update bill of lading successfully" };
     } else {
       const newBoL = new BoLModel({
-        file: file.path,
+        file: result.secure_url,
         status: BoLStatus.USER_UPLOADED,
       });
       await newBoL.save();
@@ -63,6 +66,7 @@ export class BoLRepository {
       const cid = await uploadFile(curBoL.file);
       curBoL.hash = cid;
       await curBoL.save();
+      await uploadDocument(curLC);
       return { message: "bill of lading approved" };
     } else {
       throw new NotFoundError("bill of lading not found");

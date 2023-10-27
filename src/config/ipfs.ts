@@ -1,3 +1,4 @@
+//@ts-nocheck
 import axios from "axios";
 import { Web3Storage } from "web3.storage";
 import { getFilesFromPath } from "web3.storage";
@@ -26,7 +27,7 @@ const saveToIPFS = async (filePath: string) => {
   // }
 
   const client = new Web3Storage({ token: process.env.WEB3_STORAGE_KEY });
-  const files = await getFilesFromPath(filePath);
+  const files: Array<any> = await getFilesFromPath(filePath);
   const cid = await client.put(files, {wrapWithDirectory: false});
   return cid;
 };

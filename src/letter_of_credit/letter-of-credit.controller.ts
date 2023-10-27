@@ -10,6 +10,7 @@ import {
   Param,
   Patch,
   Post,
+  Req,
 } from "routing-controllers";
 import { OpenAPI } from "routing-controllers-openapi";
 import { LoCService } from "./letter-of-credit.service";
@@ -17,6 +18,7 @@ import { UserRole } from "../user/enums/user-role.enum";
 import { User, UserDocument } from "user/user.model";
 import { UpdateLCDto } from "./dtos/updateLC.dto";
 import { isValidObjectId } from "mongoose";
+import { LetterOfCreditStatus } from "./enums/letter-of-credit.enum";
 
 @JsonController("/letterofcredits")
 export class LoCController {
@@ -42,15 +44,15 @@ export class LoCController {
     }
   }
 
-  @Post("/:salescontract_id/create")
+  @Post("/create")
   @Authorized(UserRole.BANK)
   @OpenAPI({ security: [{ BearerAuth: [] }] })
   async createLC(
     @CurrentUser({ required: true }) user: UserDocument,
-    @Param("salescontract_id") salescontract_id: string
+    @Req() req: any
   ) {
     try {
-      return this.LoCService.createLC(user._id.toString(), salescontract_id);
+      return this.LoCService.createLC(user._id.toString(), req.body.salesContractID);
     } catch (err) {
       throw new BadRequestError(err.message);
     }
@@ -62,13 +64,32 @@ export class LoCController {
   async updateLC(
     @CurrentUser({ required: true }) user: UserDocument,
     @Param("letterofcredit_id") letterofcredit_id: string,
-    @Body({}) updateLCDto: UpdateLCDto
+    @Body() updateLCDto: UpdateLCDto
   ) {
     try {
       return this.LoCService.updateLC(
         user._id.toString(),
         letterofcredit_id,
         updateLCDto
+      );
+    } catch (err) {
+      throw new BadRequestError(err.message);
+    }
+  }
+
+  @Patch("/:letterofcredit_id/status")
+  @Authorized(UserRole.BANK)
+  @OpenAPI({ security: [{ BearerAuth: [] }] })
+  async updateLCStatus(
+    @CurrentUser({ required: true }) user: UserDocument,
+    @Param("letterofcredit_id") letterofcredit_id: string,
+    @Req() req: any
+  ) {
+    try {      
+      return this.LoCService.updateLCStatus(
+        user._id.toString(),
+        letterofcredit_id,
+        req.body.status
       );
     } catch (err) {
       throw new BadRequestError(err.message);
@@ -102,7 +123,9 @@ export class LoCController {
   @OpenAPI({ security: [{ BearerAuth: [] }] })
   async rejectLC(@CurrentUser({required: true}) user: UserDocument, @Param('letterofcredit_id') LCID: string, @Body() req: any) {
     try {
-      return this.LoCService.rejectLC(user._id.toString(), LCID);
+      console.log(req);
+      
+      return this.LoCService.rejectLC(user._id.toString(), LCID, req.reason);
     }
     catch(err) {
       throw new BadRequestError(err.message);

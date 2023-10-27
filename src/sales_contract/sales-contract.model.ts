@@ -4,6 +4,9 @@ import { User } from "../user/user.model";
 import { SalesContractStatus } from "./enums/sales-contract.enum";
 
 export class SalesContract {
+    @prop({required: false})
+    contractId: string;
+    
     @prop({type: Types.ObjectId, required: true, ref: () => User})
     importerID: Ref<User>;
 
@@ -25,7 +28,7 @@ export class SalesContract {
     @prop({required: true})
     paymentMethod: string;
 
-    @prop({required: true})
+    @prop({required: false})
     additionalInfo: string;
 
     @prop({required: true})

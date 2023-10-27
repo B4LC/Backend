@@ -7,6 +7,9 @@ import { SalesContract } from "../sales_contract/sales-contract.model";
 import { LetterOfCreditStatus } from "./enums/letter-of-credit.enum";
 
 export class LetterOfCredit {
+    @prop({required: false})
+    lcId: string;
+
     @prop({type: Types.ObjectId, required: true, ref: () => SalesContract})
     salesContract: Ref<SalesContract>;
 
@@ -27,6 +30,9 @@ export class LetterOfCredit {
 
     @prop({required: true, enum: LetterOfCreditStatus})
     status: LetterOfCreditStatus;
+
+    @prop({required: false})
+    rejectedReason: string;
 }
 export type LoCDocument = DocumentType<LetterOfCredit>;
 // export const LCModel = getModelForClass(LetterOfCredit);
