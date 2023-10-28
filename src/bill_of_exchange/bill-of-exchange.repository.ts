@@ -2,7 +2,8 @@ import { BoEModel, LoCModel, SalesContractModel } from "../model";
 import { NotFoundError, UnauthorizedError } from "routing-controllers";
 import { uploadDocument, uploadFile } from "../helper/uploadFile";
 import { BoEStatus } from "./enums/bill-of-exchange-status.enum";
-import getContract from "helper/contract";
+require("dotenv").config();
+import uploadToCloudinary from "../config/cloudinary";
 
 export class BoERepository {
   async createBoE(LCID: string, userID: string, file: Express.Multer.File) {
@@ -16,14 +17,15 @@ export class BoERepository {
     ) {
       throw new UnauthorizedError("Unauthorized to upload document");
     }
+    const result = await uploadToCloudinary(curLC._id.toString(), file);
     if (curLC.billOfExchange) {
       const curBoE = await BoEModel.findById(curLC.billOfExchange);
-      curBoE.file = file.path;
+      curBoE.file = result.secure_url;
       await curBoE.save();
       return { message: "Update bill of exchange successfully" };
     } else {
       const newBoE = new BoEModel({
-        file: file.path,
+        file: result.secure_url,
         status: BoEStatus.USER_UPLOADED,
       });
       await newBoE.save();

@@ -15,7 +15,7 @@ import { InvoiceService } from "./invoice.service";
 import { UserRole } from "../user/enums/user-role.enum";
 import { OpenAPI } from "routing-controllers-openapi";
 import { UserDocument } from "../user/user.model";
-import { fileUploadOptions } from "../config/multer";
+// import { fileUploadOptions } from "../config/multer";
 
 @JsonController("/invoices")
 export class InvoiceController {
@@ -27,7 +27,7 @@ export class InvoiceController {
   async createInvoice(
     @CurrentUser({ required: true }) user: UserDocument,
     @Req() req: any,
-    @UploadedFile("invoice", { options: fileUploadOptions })
+    @UploadedFile("invoice")
     file: Express.Multer.File
   ) {
     try {
