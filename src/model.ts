@@ -9,6 +9,6 @@ import { LetterOfCredit } from "./letter_of_credit/letter-of-credit.model";
 export const UserModel = getModelForClass(User);
 export const InvoiceModel = getModelForClass(Invoice);
 export const BoEModel = getModelForClass(BillOfExchange);
-export const BoLModel = getModelForClass(BillOfLading)
+export const BoLModel = getModelForClass(BillOfLading);
 export const SalesContractModel = getModelForClass(SalesContract);
-export const LoCModel = getModelForClass(LetterOfCredit)
+export const LoCModel = getModelForClass(LetterOfCredit);

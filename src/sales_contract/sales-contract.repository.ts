@@ -189,7 +189,7 @@ export class SalesContractRepository {
         }
       );
       await Promise.all(salesContractPromises);
-      return agreements;
+      return agreements.reverse();
     } else {
       const agreements: {
         salescontract_id: string;
@@ -246,7 +246,7 @@ export class SalesContractRepository {
         };
         agreements.push(result);
       }
-      return agreements;
+      return agreements.reverse();
     }
   }
 
