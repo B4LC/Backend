@@ -38,8 +38,8 @@ export class LoCRepository {
     });
 
     const LcCreatedPromise = new Promise<number>((resolve) => {
-      contract.on("LcCreated", (LCID, salesContractID) => {
-        const lcId = parseInt(LCID._hex, 16);
+      contract.on("LcCreated", (lcID) => {
+        const lcId = parseInt(lcID._hex, 16);
         resolve(lcId);
       });
     })
@@ -121,7 +121,7 @@ export class LoCRepository {
       };
       LCs.push(result);
     }
-    return LCs;
+    return LCs.reverse();
   }
 
   async getLCDetail(userID: string, LCID: string) {
