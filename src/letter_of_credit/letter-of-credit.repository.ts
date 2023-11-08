@@ -180,8 +180,8 @@ export class LoCRepository {
       billOfExchange: {
         id: curBoE?._id.toString(),
         hash: curBoE?.hash,
-        file: curInvoice?.file,
-        status: curInvoice?.status,
+        file: curBoE?.file,
+        status: curBoE?.status,
         // issuingDate: new Date(parseInt(curBoE?.issuingDate)).toDateString(),
         // drawerInfo: (await UserModel.findById(curBoE?.drawerInfo))?.username,
         // paymentDeadline: new Date(parseInt(curBoE?.paymentDeadline)).toDateString(),
