@@ -1,8 +1,5 @@
 //@ts-nocheck
-import axios from "axios";
-import { Web3Storage } from "web3.storage";
-import { getFilesFromPath } from "web3.storage";
-
+import { File, Web3Storage } from "web3.storage";
 require("dotenv").config;
 
 const saveToIPFS = async (filePath: string) => {
@@ -27,8 +24,19 @@ const saveToIPFS = async (filePath: string) => {
   // }
 
   const client = new Web3Storage({ token: process.env.WEB3_STORAGE_KEY });
-  const files: Array<any> = await getFilesFromPath(filePath);
-  const cid = await client.put(files, {wrapWithDirectory: false});
+  const fileName = filePath.substring(filePath.lastIndexOf('/') + 1);
+  const response = await fetch(filePath);
+  console.log(response.url);
+  
+  const arrayBuffer = await response.arrayBuffer();
+  const imageData = new Uint8Array(arrayBuffer);
+
+  // Process the image data as needed
+  console.log("Image data:", imageData);
+  const file = new File([imageData], fileName);
+  console.log(file);
+  
+  const cid = await client.put([file], { wrapWithDirectory: false });
   return cid;
 };
 
