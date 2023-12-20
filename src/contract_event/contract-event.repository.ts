@@ -26,7 +26,7 @@ export class ContractEventRepository {
       await this.fetchData.salesContractCreatedEvent(
         curSalesContract.contractId
       );
-      console.log(salesContractCreatedEvent);
+      // console.log(salesContractCreatedEvent);
       
     const LcCreatedEvent = await this.fetchData.LcCreatedEvent(
       curLC.lcId

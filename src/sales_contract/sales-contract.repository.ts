@@ -66,6 +66,7 @@ export class SalesContractRepository {
       price: createSalesContractDto.price,
       paymentMethod: createSalesContractDto.paymentMethod,
       additionalInfo: createSalesContractDto.additionalInfo,
+      requiredDocument: createSalesContractDto.requiredDocument,
       deadline: deadlineTimestamp,
       status: SalesContractStatus.CREATED,
     });
@@ -253,10 +254,7 @@ export class SalesContractRepository {
   async getSalesContractDetail(userID: string, salesContractID: string) {
     const curUser = await UserModel.findById(userID).exec();
     if (!curUser) throw new NotFoundError("User not found");
-    // console.log(curUser);
-    // console.log(salesContractID);
     const curSalesContractID = curUser.salesContracts.find((salesContract) => {
-      // console.log(salesContract.toString());
       return salesContract.toString() == salesContractID;
     });
     if (!curSalesContractID) throw new NotFoundError("Salescontract not found");
@@ -269,6 +267,7 @@ export class SalesContractRepository {
       commodity,
       price,
       paymentMethod,
+      requiredDocument,
       additionalInfo,
       deadline,
       status,
@@ -279,7 +278,7 @@ export class SalesContractRepository {
     let issuingBank = (await UserModel.findById(issuingBankID)).username;
     let advisingBank = (await UserModel.findById(advisingBankID)).username;
     let deadlineInDate = new Date(parseInt(deadline)).toDateString();
-    // console.log(importer);
+    let doc = JSON.parse(JSON.stringify(requiredDocument));
     const result = {
       importer: importer,
       exporter: exporter,
@@ -288,6 +287,7 @@ export class SalesContractRepository {
       commodity: commodity,
       price: price,
       paymentMethod: paymentMethod,
+      requiredDocument: doc,
       additionalInfo: additionalInfo,
       deadlineInDate: deadlineInDate,
       status: status,

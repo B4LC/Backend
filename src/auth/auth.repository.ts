@@ -92,7 +92,6 @@ export class AuthRepository {
         throw new Error("Incorrect password");
       role = user.role;
       username = user.username;
-      console.log(username);
 
       const {
         JWT_SECRET,
