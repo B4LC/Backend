@@ -15,6 +15,7 @@ import { InvoiceService } from "./invoice.service";
 import { UserRole } from "../user/enums/user-role.enum";
 import { OpenAPI } from "routing-controllers-openapi";
 import { UserDocument } from "../user/user.model";
+import { CreateInvoiceDto } from "./dtos/createInvoice.dto";
 // import { fileUploadOptions } from "../config/multer";
 
 @JsonController("/invoices")
@@ -25,20 +26,19 @@ export class InvoiceController {
   @Authorized(UserRole.USER)
   @OpenAPI({ security: [{ BearerAuth: [] }] })
   async createInvoice(
-    @CurrentUser({ required: true }) user: UserDocument,
-    @Req() req: any,
-    @UploadedFile("invoice")
-    file: Express.Multer.File
+  //   @CurrentUser({ required: true }) user: UserDocument,
+  //   @Param()
+  //   createInvoice: CreateInvoiceDto
   ) {
-    try {
-      return this.invoiceService.createInvoice(
-        req.body.LCID,
-        user._id.toString(),
-        file
-      );
-    } catch (err) {
-      throw new BadRequestError(err.message);
-    }
+  //   try {
+  //     return this.invoiceService.createInvoice(
+  //       req.body.LCID,
+  //       user._id.toString(),
+  //       file
+  //     );
+  //   } catch (err) {
+  //     throw new BadRequestError(err.message);
+  //   }
   }
 
   @Get("/:invoice_id")

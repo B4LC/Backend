@@ -7,34 +7,34 @@ import uploadToCloudinary from "../config/cloudinary";
 
 export class BoERepository {
   async createBoE(LCID: string, userID: string, file: Express.Multer.File) {
-    const curLC = await LoCModel.findById(LCID);
-    const curSalesContract = await SalesContractModel.findById(
-      curLC.salesContract
-    );
-    if (
-      userID !== curSalesContract.importerID.toString() &&
-      userID !== curSalesContract.exporterID.toString()
-    ) {
-      throw new UnauthorizedError("Unauthorized to upload document");
-    }
-    const result = await uploadToCloudinary(curLC._id.toString(), file);
-    if (curLC.billOfExchange) {
-      const curBoE = await BoEModel.findById(curLC.billOfExchange);
-      curBoE.file = result.secure_url;
-      await curBoE.save();
-      return { message: "Update bill of exchange successfully" };
-    } else {
-      const newBoE = new BoEModel({
-        file: result.secure_url,
-        status: BoEStatus.USER_UPLOADED,
-      });
-      await newBoE.save();
-      await LoCModel.updateMany(
-        { _id: curLC._id },
-        { $set: { billOfExchange: newBoE._id } }
-      );
-      return { message: "Upload bill of exchange successfully" };
-    }
+    // const curLC = await LoCModel.findById(LCID);
+    // const curSalesContract = await SalesContractModel.findById(
+    //   curLC.salesContract
+    // );
+    // if (
+    //   userID !== curSalesContract.importerID.toString() &&
+    //   userID !== curSalesContract.exporterID.toString()
+    // ) {
+    //   throw new UnauthorizedError("Unauthorized to upload document");
+    // }
+    // const result = await uploadToCloudinary(curLC._id.toString(), file);
+    // if (curLC.billOfExchange) {
+    //   const curBoE = await BoEModel.findById(curLC.billOfExchange);
+    //   curBoE.file = result.secure_url;
+    //   await curBoE.save();
+    //   return { message: "Update bill of exchange successfully" };
+    // } else {
+    //   const newBoE = new BoEModel({
+    //     file: result.secure_url,
+    //     status: BoEStatus.USER_UPLOADED,
+    //   });
+    //   await newBoE.save();
+    //   await LoCModel.updateMany(
+    //     { _id: curLC._id },
+    //     { $set: { billOfExchange: newBoE._id } }
+    //   );
+    //   return { message: "Upload bill of exchange successfully" };
+    // }
   }
 
   async getBoEDetail(BoEID: string) {

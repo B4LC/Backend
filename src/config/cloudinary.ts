@@ -1,9 +1,9 @@
 import { UploadApiResponse, v2 as cloudinary } from "cloudinary";
 import streamifier from "streamifier";
 
-const uploadToCloudinary = (folder: string, file: Express.Multer.File) => {
+const uploadToCloudinary = (file: Express.Multer.File) => {
   return new Promise<UploadApiResponse>((resolve, reject) => {
-    let stream = cloudinary.uploader.upload_stream({resource_type: "auto", format: "pdf", folder: folder}, (error, result) => {
+    let stream = cloudinary.uploader.upload_stream({resource_type: "auto", format: "pdf"}, (error, result) => {
       if (result) {
         resolve(result);
       } else {

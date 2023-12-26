@@ -1,6 +1,6 @@
 import { SalesContractDto } from "./dtos/createSalesContract.dto";
 import { UserDocument } from "../user/user.model";
-import { SalesContract, SalesContractDocument } from "./sales-contract.model";
+import { RequiredDocument, SalesContract, SalesContractDocument } from "./sales-contract.model";
 import { SalesContractStatus } from "./enums/sales-contract.enum";
 import { UserModel, SalesContractModel } from "../model";
 import mongoose, { ObjectId } from "mongoose";
@@ -114,6 +114,7 @@ export class SalesContractRepository {
         commodity: updateSalesContractDto.commodity,
         price: updateSalesContractDto.price,
         paymentMethod: updateSalesContractDto.paymentMethod,
+        requiredDocument: updateSalesContractDto.requiredDocument,
         additionalInfo: updateSalesContractDto.additionalInfo,
         deadline: deadlineTimestamp,
       });
@@ -135,6 +136,7 @@ export class SalesContractRepository {
         commodity: string;
         price: string;
         paymentMethod: string;
+        requiredDocument: RequiredDocument;
         additionalInfo: string;
         deadlineInDate: string;
         status: SalesContractStatus;
@@ -158,6 +160,7 @@ export class SalesContractRepository {
               commodity,
               price,
               paymentMethod,
+              requiredDocument,
               additionalInfo,
               deadline,
               status,
@@ -169,7 +172,7 @@ export class SalesContractRepository {
               .username;
             let advisingBank = (await UserModel.findById(advisingBankID))
               .username;
-
+            let doc = JSON.parse(JSON.stringify(requiredDocument));
             const deadlineInDate = new Date(parseInt(deadline)).toDateString();
 
             const result = {
@@ -181,6 +184,7 @@ export class SalesContractRepository {
               commodity: commodity,
               price: price,
               paymentMethod: paymentMethod,
+              requiredDocument: doc,
               additionalInfo: additionalInfo,
               deadlineInDate: deadlineInDate,
               status: status,
@@ -201,6 +205,7 @@ export class SalesContractRepository {
         commodity: string;
         price: string;
         paymentMethod: string;
+        requiredDocument: RequiredDocument;
         additionalInfo: string;
         deadlineInDate: string;
         status: SalesContractStatus;
@@ -221,6 +226,7 @@ export class SalesContractRepository {
           commodity,
           price,
           paymentMethod,
+          requiredDocument,
           additionalInfo,
           deadline,
           status,
@@ -231,6 +237,7 @@ export class SalesContractRepository {
         let issuingBank = (await UserModel.findById(issuingBankID)).username;
         let advisingBank = (await UserModel.findById(advisingBankID)).username;
         let deadlineInDate = new Date(parseInt(deadline)).toDateString();
+        let doc = JSON.parse(JSON.stringify(requiredDocument));
         // console.log(importer);
         const result = {
           salescontract_id: salesContractID.toString(),
@@ -241,6 +248,7 @@ export class SalesContractRepository {
           commodity: commodity,
           price: price,
           paymentMethod: paymentMethod,
+          requiredDocument: doc,
           additionalInfo: additionalInfo,
           deadlineInDate: deadlineInDate,
           status: status,

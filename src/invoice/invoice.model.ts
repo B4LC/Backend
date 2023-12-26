@@ -3,7 +3,7 @@ import { Types } from "mongoose";
 import { User } from "../user/user.model";
 import { InvoiceStatus } from "./enums/invoiceStatus.enum";
 
-class PackageInfo {
+export class PackageInfo {
     @prop({required: false})
     description: string;
 
