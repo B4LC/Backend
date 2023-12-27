@@ -22,23 +22,23 @@ import { CreateInvoiceDto } from "./dtos/createInvoice.dto";
 export class InvoiceController {
   private readonly invoiceService = new InvoiceService();
 
-  @Post("/create")
+  @Post("/create/:lcid")
   @Authorized(UserRole.USER)
   @OpenAPI({ security: [{ BearerAuth: [] }] })
   async createInvoice(
-  //   @CurrentUser({ required: true }) user: UserDocument,
-  //   @Param()
-  //   createInvoice: CreateInvoiceDto
+    @CurrentUser({ required: true }) user: UserDocument,
+    @Param("lcid") lcid: string,
+    @Body() req: any
   ) {
-  //   try {
-  //     return this.invoiceService.createInvoice(
-  //       req.body.LCID,
-  //       user._id.toString(),
-  //       file
-  //     );
-  //   } catch (err) {
-  //     throw new BadRequestError(err.message);
-  //   }
+    try {
+      return this.invoiceService.createInvoice(
+        lcid,
+        user._id.toString(),
+        req
+      );
+    } catch (err) {
+      throw new BadRequestError(err.message);
+    }
   }
 
   @Get("/:invoice_id")

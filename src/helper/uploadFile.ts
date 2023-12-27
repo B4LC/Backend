@@ -18,10 +18,10 @@ export async function uploadDocument(curLC: LoCDocument) {
     const curInvoice = await InvoiceModel.findOne({_id: curLC.invoice})
     const curBoE = await BoEModel.findOne({_id: curLC.billOfExchange})
     const curBoL = await BoLModel.findOne({_id: curLC.billOfLading})
-    if(curInvoice?.status == InvoiceStatus.APRROVED && curBoE?.status == BoEStatus.APRROVED && curBoL?.status == BoLStatus.APRROVED) {
+    if(curInvoice?.status == InvoiceStatus.APRROVED && curBoE?.status == BoEStatus.APRROVED) {
         let contract = getContract();
         // console.log(contract);
-        await contract.uploadDocument(parseInt(curLC.lcId), curInvoice.hash, curBoE.hash, curBoL.hash, "");
+        await contract.uploadDocument(parseInt(curLC.lcId), curInvoice.hash, curBoE.hash, "", "");
         curLC.status = LetterOfCreditStatus.DOCUMENT_APPROVED;
         await curLC.save();
     }

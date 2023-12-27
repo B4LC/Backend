@@ -170,9 +170,9 @@ export class LoCRepository {
       },
       invoice: {
         id: curInvoice?._id.toString(),
-        hash: curInvoice?.hash,
-        file: curInvoice?.file,
-        status: curInvoice?.status,
+        // hash: curInvoice?.hash,
+        // file: curInvoice?.file,
+        // status: curInvoice?.status,
         // createdOn: new Date(parseInt(curInvoice?.createdOn)).toDateString(),
         // additionalInfo: curInvoice?.additionalInfo,
         // packageInfo: curInvoice?.packageInfo,
@@ -180,17 +180,17 @@ export class LoCRepository {
       billOfExchange: {
         id: curBoE?._id.toString(),
         hash: curBoE?.hash,
-        file: curBoE?.file,
+        file: curBoE?.file_path,
         status: curBoE?.status,
         // issuingDate: new Date(parseInt(curBoE?.issuingDate)).toDateString(),
         // drawerInfo: (await UserModel.findById(curBoE?.drawerInfo))?.username,
         // paymentDeadline: new Date(parseInt(curBoE?.paymentDeadline)).toDateString(),
       },
-      billOfLading: {
-        id: curBoL?._id.toString(),
-        hash: curBoL?.hash,
-        file: curBoL?.file,
-        status: curBoL?.status,
+      // billOfLading: {
+        // id: curBoL?._id.toString(),
+        // hash: curBoL?.hash,
+        // file: curBoL?.file,
+        // status: curBoL?.status,
         // bookingNo: curBoL?.bookingNo,
         // voyageNo: curBoL?.voyageNo,
         // billType: curBoL?.billType,
@@ -204,7 +204,7 @@ export class LoCRepository {
         // portOfDischarge: curBoL?.portOfDischarge,
         // portOfDelivery: curBoL?.portOfDelivery,
         // additionalInfo: curBoL?.additionalInfo,
-      }
+      // }
     };
     return result;
   }

@@ -3,8 +3,8 @@ import { InvoiceRepository } from "./invoice.repository";
 
 export class InvoiceService {
     private readonly invoiceRepository = new InvoiceRepository();
-    async createInvoice(LCID: string, userID: string, createInvoice: CreateInvoiceDto) {
-        return this.invoiceRepository.createInvoice(LCID, userID, createInvoice);
+    async createInvoice(LCID: string, userID: string, newInvoice: any) {
+        return this.invoiceRepository.createInvoice(LCID, userID, newInvoice);
     }
     async getInvoiceDetail(invoiceID: string) {
         return this.invoiceRepository.getInvoiceDetail(invoiceID);
