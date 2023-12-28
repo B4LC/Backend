@@ -2,8 +2,8 @@ import { BoERepository } from "./bill-of-exchange.repository";
 
 export class BoEService {
     private readonly BoERepository = new BoERepository();
-    async createBoE(LCID: string, userID: string, file: Express.Multer.File) {
-        return this.BoERepository.createBoE(LCID, userID, file);
+    async createBoE(LCID: string, userID: string, newBoE: any) {
+        return this.BoERepository.createBoE(LCID, userID, newBoE);
     }
     async getBoEDetail(BoEID: string) {
         return this.BoERepository.getBoEDetail(BoEID);

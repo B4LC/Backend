@@ -17,8 +17,9 @@ export class BoERepository {
     ) {
       throw new UnauthorizedError("Unauthorized to upload document");
     }
+    console.log(exchange);
+    
     if (curLC.billOfExchange) {
-      const curBoE = await BoEModel.findById(curLC.billOfExchange);
       await BoEModel.findByIdAndUpdate(curLC.billOfExchange._id, {
         file_path: exchange.file_path,
         no: exchange.no,
@@ -27,7 +28,6 @@ export class BoERepository {
         content: exchange.content,
         to: exchange.to
       })
-      await curBoE.save();
       return { message: "Update bill of exchange successfully" };
     } else {
       const newBoE = new BoEModel({

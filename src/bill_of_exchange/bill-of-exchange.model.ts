@@ -14,6 +14,9 @@ export class BillOfExchange {
     file_path: string;
 
     @prop({required: false})
+    table: any;
+
+    @prop({required: false})
     no: string;
 
     @prop({required: false})

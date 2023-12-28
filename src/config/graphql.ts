@@ -30,11 +30,10 @@ export class FetchData {
           id: salesContractID,
         },
         fetchPolicy: "network-only",
-      })
-      return data.data.salesContractCreateds
-    }
-    catch(err) {
-      console.log(err.message)
+      });
+      return data.data.salesContractCreateds;
+    } catch (err) {
+      console.log(err.message);
     }
   }
 
@@ -43,14 +42,13 @@ export class FetchData {
       const data = await this.ApolloClient.query({
         query: GET_LC_CREATED_EVENT_DETAIL,
         variables: {
-          lcid: LCID
+          lcid: LCID,
         },
         fetchPolicy: "network-only",
       });
       return data.data.lcCreateds;
-    }
-    catch(err) {
-      console.log(err.message)
+    } catch (err) {
+      console.log(err.message);
     }
   }
 
@@ -59,16 +57,13 @@ export class FetchData {
       const data = await this.ApolloClient.query({
         query: GET_LC_APPROVED_EVENT_DETAIL,
         variables: {
-          where: {
-            value: LCID,
-          },
+          lcid: LCID,
         },
         fetchPolicy: "network-only",
       });
-      return data.data.lcApproveds
-    }
-    catch(err) {
-      console.log(err.message)
+      return data.data.lcApproveds;
+    } catch (err) {
+      console.log(err.message);
     }
   }
 
@@ -77,16 +72,13 @@ export class FetchData {
       const data = await this.ApolloClient.query({
         query: GET_LC_REJECTED_EVENT_DETAIL,
         variables: {
-          where: {
-            value: LCID,
-          },
+          lcid: LCID,
         },
         fetchPolicy: "network-only",
-      })
-      return data.data.lcRejecteds
-    }
-    catch(err) {
-      console.log(err.message)
+      });
+      return data.data.lcRejecteds;
+    } catch (err) {
+      console.log(err.message);
     }
   }
 
@@ -95,16 +87,13 @@ export class FetchData {
       const data = await this.ApolloClient.query({
         query: GET_LC_STATUS_CHANGED_EVENT_DETAIL,
         variables: {
-          where: {
-            value: LCID,
-          },
+          lcid: LCID,
         },
         fetchPolicy: "network-only",
-      })
-      return data.data.lcStatusChangeds
-    }
-    catch(err) {
-      console.log(err)
+      });
+      return data.data.lcStatusChangeds;
+    } catch (err) {
+      console.log(err);
     }
   }
 
@@ -113,16 +102,13 @@ export class FetchData {
       const data = await this.ApolloClient.query({
         query: GET_DOC_UPLOADED_EVENT_DETAIL,
         variables: {
-          where: {
-            value: LCID,
-          },
+          lcid: LCID,
         },
         fetchPolicy: "network-only",
-      })
-      return data.data.docUploadeds
-    }
-    catch(err) {
-      console.log(err.message)
+      });
+      return data.data.docUploadeds;
+    } catch (err) {
+      console.log(err.message);
     }
   }
 }
