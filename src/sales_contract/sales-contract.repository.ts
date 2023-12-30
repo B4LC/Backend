@@ -237,7 +237,7 @@ export class SalesContractRepository {
         let issuingBank = (await UserModel.findById(issuingBankID)).username;
         let advisingBank = (await UserModel.findById(advisingBankID)).username;
         let deadlineInDate = new Date(parseInt(deadline)).toDateString();
-        let doc = JSON.parse(JSON.stringify(requiredDocument));
+        let doc = (requiredDocument != undefined) ? JSON.parse(JSON.stringify(requiredDocument)) : {};
         // console.log(importer);
         const result = {
           salescontract_id: salesContractID.toString(),
