@@ -134,8 +134,8 @@ export class InvoiceRepository {
       const curInvoice = await InvoiceModel.findById(curLC.invoice);
       curInvoice.status = InvoiceStatus.APRROVED;
       // save to ipfs
-      const cid = await uploadFile(curInvoice.file_path);
-      curInvoice.hash = cid;
+      // const cid = await uploadFile(curInvoice.file_path);
+      // curInvoice.hash = cid;
       await curInvoice.save();
       await uploadDocument(curLC);
       return { message: "Invoice approved" };

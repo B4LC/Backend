@@ -100,4 +100,8 @@ function main() {
   });
 }
 main();
+process.on('exit', () => {
+  redisClient.quit();
+  mongoose.disconnect();
+})
 
