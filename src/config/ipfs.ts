@@ -1,43 +1,37 @@
-//@ts-nocheck
-import { File, Web3Storage } from "web3.storage";
-require("dotenv").config;
+import axios from "axios";
+import fs from 'fs';
+import FormData from 'form-data';
+require("dotenv").config();
+const JWT = process.env.PINATA_JWT;
 
-const saveToIPFS = async (filePath: string) => {
-  // const formData = new FormData();
-  // formData.append("file", file);
-
-  // var config = {
-  //   method: "post",
-  //   url: process.env.WEB3_STORAGE_URL,
-  //   headers: {
-  //     Authorization: `Bearer ${process.env.WEB3_STORAGE_KEY}`,
-  //     "Content-Type": "text/plain",
-  //   },
-  //   data: formData,
-  // };
-  // try {
-  //   const response = await axios(config);
-  //   console.log(response.data.cid);
-  //   return response.data.cid;
-  // }catch(err) {
-  //   console.log(err.message);
-  // }
-
-  const client = new Web3Storage({ token: process.env.WEB3_STORAGE_KEY });
-  const fileName = filePath.substring(filePath.lastIndexOf('/') + 1);
-  const response = await fetch(filePath);
-  console.log(response.url);
-  
-  const arrayBuffer = await response.arrayBuffer();
-  const imageData = new Uint8Array(arrayBuffer);
-
-  // Process the image data as needed
-  console.log("Image data:", imageData);
-  const file = new File([imageData], fileName);
-  console.log(file);
-  
-  const cid = await client.put([file], { wrapWithDirectory: false });
-  return cid;
+const saveToIPFS = async (url: string) => {
+  try {
+    const res = await axios.get(url, {responseType: 'arraybuffer'});
+    const fileData = Buffer.from(res.data);
+    fs.writeFileSync("./files/tmp.pdf", fileData);
+  }
+  catch(e) {
+    console.log(e);
+  }
+  const formData = new FormData();
+  const file = fs.createReadStream("./files/tmp.pdf")
+  // const file = fs.readFileSync(url);
+  formData.append("file", file);
+  try {
+    const res = await axios.post(
+      "https://api.pinata.cloud/pinning/pinFileToIPFS",
+      formData,
+      {
+        headers: {
+          // "Content-Type": `multipart/form-data; boundary=${formData._boundary}`,
+          Authorization: JWT,
+        },
+      }
+    );
+    console.log(res.data);
+    return res.data.IpfsHash;
+  } catch (error) {
+    console.log(error);
+  }
 };
-
 export default saveToIPFS;
