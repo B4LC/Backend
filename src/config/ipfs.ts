@@ -1,35 +1,37 @@
-//@ts-nocheck
 import axios from "axios";
-import { Web3Storage } from "web3.storage";
-import { getFilesFromPath } from "web3.storage";
+import fs from 'fs';
+import FormData from 'form-data';
+require("dotenv").config();
+const JWT = process.env.PINATA_JWT;
 
-require("dotenv").config;
-
-const saveToIPFS = async (filePath: string) => {
-  // const formData = new FormData();
-  // formData.append("file", file);
-
-  // var config = {
-  //   method: "post",
-  //   url: process.env.WEB3_STORAGE_URL,
-  //   headers: {
-  //     Authorization: `Bearer ${process.env.WEB3_STORAGE_KEY}`,
-  //     "Content-Type": "text/plain",
-  //   },
-  //   data: formData,
-  // };
-  // try {
-  //   const response = await axios(config);
-  //   console.log(response.data.cid);
-  //   return response.data.cid;
-  // }catch(err) {
-  //   console.log(err.message);
-  // }
-
-  const client = new Web3Storage({ token: process.env.WEB3_STORAGE_KEY });
-  const files: Array<any> = await getFilesFromPath(filePath);
-  const cid = await client.put(files, {wrapWithDirectory: false});
-  return cid;
+const saveToIPFS = async (url: string) => {
+  try {
+    const res = await axios.get(url, {responseType: 'arraybuffer'});
+    const fileData = Buffer.from(res.data);
+    fs.writeFileSync("./files/tmp.pdf", fileData);
+  }
+  catch(e) {
+    console.log(e);
+  }
+  const formData = new FormData();
+  const file = fs.createReadStream("./files/tmp.pdf")
+  // const file = fs.readFileSync(url);
+  formData.append("file", file);
+  try {
+    const res = await axios.post(
+      "https://api.pinata.cloud/pinning/pinFileToIPFS",
+      formData,
+      {
+        headers: {
+          // "Content-Type": `multipart/form-data; boundary=${formData._boundary}`,
+          Authorization: JWT,
+        },
+      }
+    );
+    console.log(res.data);
+    return res.data.IpfsHash;
+  } catch (error) {
+    console.log(error);
+  }
 };
-
 export default saveToIPFS;

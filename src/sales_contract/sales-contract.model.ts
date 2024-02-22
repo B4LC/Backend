@@ -3,6 +3,31 @@ import { Types } from "mongoose";
 import { User } from "../user/user.model";
 import { SalesContractStatus } from "./enums/sales-contract.enum";
 
+export class RequiredDocument {
+    @prop({required: false})
+    invoice: boolean
+
+    @prop({required: false})
+    billOfLading: boolean
+
+    @prop({required: false})
+    billOfExchange: boolean
+
+    @prop({required: false})
+    insurance: boolean
+
+    @prop({required: false})
+    qualityCertificate: boolean
+
+    @prop({required: false})
+    quantityCertificate: boolean
+
+    @prop({required: false})
+    packingList: boolean
+
+    @prop({required: false})
+    otherDocument: string
+}
 export class SalesContract {
     @prop({required: false})
     contractId: string;
@@ -28,6 +53,9 @@ export class SalesContract {
     @prop({required: true})
     paymentMethod: string;
 
+    @prop({required: true})
+    requiredDocument: RequiredDocument
+    
     @prop({required: false})
     additionalInfo: string;
 

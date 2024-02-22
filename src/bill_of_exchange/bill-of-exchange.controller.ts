@@ -21,20 +21,19 @@ import { BoEService } from "./bill-of-exchange.service";
 export class BoEController {
   private readonly BoEService = new BoEService();
 
-  @Post("/create")
+  @Post("/create/:lcid")
   @Authorized(UserRole.USER)
   @OpenAPI({ security: [{ BearerAuth: [] }] })
   async createBoE(
     @CurrentUser({ required: true }) user: UserDocument,
-    @Req() req: any,
-    @UploadedFile("bill_of_exchange")
-    file: Express.Multer.File
+    @Param("lcid") lcid: string,
+    @Body() req: any
   ) {
     try {
       return this.BoEService.createBoE(
-        req.body.LCID,
+        lcid,
         user._id.toString(),
-        file
+        req
       );
     } catch (err) {
       throw new BadRequestError(err.message);

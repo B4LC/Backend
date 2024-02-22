@@ -6,7 +6,7 @@ require("dotenv").config();
 import uploadToCloudinary from "../config/cloudinary";
 
 export class BoERepository {
-  async createBoE(LCID: string, userID: string, file: Express.Multer.File) {
+  async createBoE(LCID: string, userID: string, exchange: any) {
     const curLC = await LoCModel.findById(LCID);
     const curSalesContract = await SalesContractModel.findById(
       curLC.salesContract
@@ -17,16 +17,27 @@ export class BoERepository {
     ) {
       throw new UnauthorizedError("Unauthorized to upload document");
     }
-    const result = await uploadToCloudinary(curLC._id.toString(), file);
+    console.log(exchange);
+    
     if (curLC.billOfExchange) {
-      const curBoE = await BoEModel.findById(curLC.billOfExchange);
-      curBoE.file = result.secure_url;
-      await curBoE.save();
+      await BoEModel.findByIdAndUpdate(curLC.billOfExchange._id, {
+        file_path: exchange.file_path,
+        no: exchange.no,
+        price: exchange.price,
+        date: exchange.date,
+        content: exchange.content,
+        to: exchange.to
+      })
       return { message: "Update bill of exchange successfully" };
     } else {
       const newBoE = new BoEModel({
-        file: result.secure_url,
         status: BoEStatus.USER_UPLOADED,
+        file_path: exchange.file_path,
+        no: exchange.no,
+        price: exchange.price,
+        date: exchange.date,
+        content: exchange.content,
+        to: exchange.to
       });
       await newBoE.save();
       await LoCModel.updateMany(
@@ -42,8 +53,13 @@ export class BoERepository {
     if (curBoE) {
       return {
         hash: curBoE.hash,
-        file: curBoE.file,
+        file_path: curBoE.file_path,
         status: curBoE.status,
+        no: curBoE.no,
+        price: curBoE.price,
+        date: curBoE.date,
+        content: curBoE.content,
+        to: curBoE.to
       };
     } else {
       throw new NotFoundError("bill of exchange not found");
@@ -66,7 +82,7 @@ export class BoERepository {
       const curBoE = await BoEModel.findById(curLC.billOfExchange);
       curBoE.status = BoEStatus.APRROVED;
       // save to ipfs
-      const cid = await uploadFile(curBoE.file);
+      const cid = await uploadFile(curBoE.file_path);
       curBoE.hash = cid;
       await curBoE.save();
       await uploadDocument(curLC);

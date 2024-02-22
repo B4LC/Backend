@@ -7,34 +7,34 @@ import uploadToCloudinary from "../config/cloudinary";
 
 export class BoLRepository {
   async createBoL(LCID: string, userID: string, file: Express.Multer.File) {
-    const curLC = await LoCModel.findById(LCID);
-    const curSalesContract = await SalesContractModel.findById(
-      curLC.salesContract
-    );
-    if (
-      userID !== curSalesContract.importerID.toString() &&
-      userID !== curSalesContract.exporterID.toString()
-    ) {
-      throw new UnauthorizedError("Unauthorized to upload document");
-    }
-    const result = await uploadToCloudinary(curLC._id.toString(), file);
-    if (curLC.billOfLading) {
-      const curBoL = await BoLModel.findById(curLC.billOfLading);
-      curBoL.file = result.secure_url;
-      await curBoL.save();
-      return { message: "Update bill of lading successfully" };
-    } else {
-      const newBoL = new BoLModel({
-        file: result.secure_url,
-        status: BoLStatus.USER_UPLOADED,
-      });
-      await newBoL.save();
-      await LoCModel.updateMany(
-        { _id: curLC._id },
-        { $set: { billOfLading: newBoL._id } }
-      );
-      return { message: "Upload bill of lading successfully" };
-    }
+    // const curLC = await LoCModel.findById(LCID);
+    // const curSalesContract = await SalesContractModel.findById(
+    //   curLC.salesContract
+    // );
+    // if (
+    //   userID !== curSalesContract.importerID.toString() &&
+    //   userID !== curSalesContract.exporterID.toString()
+    // ) {
+    //   throw new UnauthorizedError("Unauthorized to upload document");
+    // }
+    // const result = await uploadToCloudinary(curLC._id.toString(), file);
+    // if (curLC.billOfLading) {
+    //   const curBoL = await BoLModel.findById(curLC.billOfLading);
+    //   curBoL.file = result.secure_url;
+    //   await curBoL.save();
+    //   return { message: "Update bill of lading successfully" };
+    // } else {
+    //   const newBoL = new BoLModel({
+    //     file: result.secure_url,
+    //     status: BoLStatus.USER_UPLOADED,
+    //   });
+    //   await newBoL.save();
+    //   await LoCModel.updateMany(
+    //     { _id: curLC._id },
+    //     { $set: { billOfLading: newBoL._id } }
+    //   );
+    //   return { message: "Upload bill of lading successfully" };
+    // }
   }
 
   async getBoLDetail(BoLID: string) {

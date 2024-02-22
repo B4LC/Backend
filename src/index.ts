@@ -21,6 +21,8 @@ import { InvoiceController } from "./invoice/invoice.controller";
 import { UserController } from "./user/user.controller";
 import { BoLController } from "./bill_of_lading/bill-of-lading.controller";
 import { BoEController } from "./bill_of_exchange/bill-of-exchange.controller";
+import { ContractEventController } from "./contract_event/contract-event.controller";
+import { FileController } from "./file/file.controller";
 require("dotenv").config();
 
 async function authorizationChecker(action: Action, roles: string[]) {
@@ -85,6 +87,8 @@ function main() {
       InvoiceController,
       BoLController,
       BoEController,
+      ContractEventController,
+      FileController
     ],
     authorizationChecker,
     currentUserChecker,
@@ -96,4 +100,8 @@ function main() {
   });
 }
 main();
+process.on('exit', () => {
+  redisClient.quit();
+  mongoose.disconnect();
+})
 

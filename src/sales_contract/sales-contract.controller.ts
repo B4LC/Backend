@@ -50,6 +50,8 @@ export class SalesContractController {
   @OpenAPI({ security: [{ BearerAuth: [] }] })
   async createSalesContract(@Req() req: any, res: any) {
     try {
+      console.log(req.body);
+      
       return this.salesContractService.createSalesContract(req.body);
     } catch (err) {
       throw new BadRequestError(err.message);
