@@ -5,14 +5,11 @@ import { SalesContract } from "../sales_contract/sales-contract.model";
 import { LetterOfCredit } from "../letter_of_credit/letter-of-credit.model";
 
 export class User {
-  @prop({ required: true })
+  @prop({ required: false })
   username: string;
   
-  @prop({ required: true })
+  @prop({ required: false })
   email: string;
-  
-  @prop({ required: true })
-  password: string;
 
   @prop({ required: false })
   phoneNumber: string;

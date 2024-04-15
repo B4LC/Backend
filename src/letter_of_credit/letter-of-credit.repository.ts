@@ -25,7 +25,7 @@ export class LoCRepository {
     await user.save();
   }
 
-  async createLC(userID: string, salesContractID: string) {
+  async createLC(userID: string, salesContractID: string, address: string) {
     const curSalesContract = await SalesContractModel.findById(salesContractID);
     if (curSalesContract.issuingBankID.toString() != userID) {
       throw new UnauthorizedError("Unauthorized to create LC");
@@ -33,47 +33,47 @@ export class LoCRepository {
 
     const startDate = new Date().getTime().toString();
     // store salescontract and LC in contract
-    let contract = getContract();
-    const salesContractCreatedPromise = new Promise<number>((resolve) => {
-      contract.on("SalesContractCreated", (salesContractID) => {
-        const contractId = parseInt(salesContractID._hex, 16);
-        resolve(contractId);
-      });
-    });
+    // let contract = getContract();
+    // const salesContractCreatedPromise = new Promise<number>((resolve) => {
+    //   contract.on("SalesContractCreated", (salesContractID) => {
+    //     const contractId = parseInt(salesContractID._hex, 16);
+    //     resolve(contractId);
+    //   });
+    // });
 
-    const LcCreatedPromise = new Promise<number>((resolve) => {
-      contract.on("LcCreated", (lcID) => {
-        const lcId = parseInt(lcID._hex, 16);
-        resolve(lcId);
-      });
-    });
+    // const LcCreatedPromise = new Promise<number>((resolve) => {
+    //   contract.on("LcCreated", (lcID) => {
+    //     const lcId = parseInt(lcID._hex, 16);
+    //     resolve(lcId);
+    //   });
+    // });
 
-    await contract.createSalesContract(
-      (
-        await UserModel.findById(curSalesContract.importerID)
-      ).username,
-      (
-        await UserModel.findById(curSalesContract.exporterID)
-      ).username,
-      (
-        await UserModel.findById(curSalesContract.issuingBankID)
-      ).username,
-      (
-        await UserModel.findById(curSalesContract.advisingBankID)
-      ).username,
-      curSalesContract.commodity,
-      curSalesContract.price,
-      curSalesContract.paymentMethod,
-      curSalesContract.additionalInfo,
-      curSalesContract.deadline
-    );
+    // await contract.createSalesContract(
+    //   (
+    //     await UserModel.findById(curSalesContract.importerID)
+    //   ).username,
+    //   (
+    //     await UserModel.findById(curSalesContract.exporterID)
+    //   ).username,
+    //   (
+    //     await UserModel.findById(curSalesContract.issuingBankID)
+    //   ).username,
+    //   (
+    //     await UserModel.findById(curSalesContract.advisingBankID)
+    //   ).username,
+    //   curSalesContract.commodity,
+    //   curSalesContract.price,
+    //   curSalesContract.paymentMethod,
+    //   curSalesContract.additionalInfo,
+    //   curSalesContract.deadline
+    // );
 
-    const contractId = await salesContractCreatedPromise;
-    await contract.createLC(contractId, startDate);
-    const lcId = await LcCreatedPromise;
+    // const contractId = await salesContractCreatedPromise;
+    // await contract.createLC(contractId, startDate);
+    // const lcId = await LcCreatedPromise;
 
     const newLC = new LoCModel({
-      lcId: lcId,
+      lcId: address,
       salesContract: new mongoose.Types.ObjectId(salesContractID),
       startDate: startDate,
       status: LetterOfCreditStatus.CREATED,
@@ -81,7 +81,7 @@ export class LoCRepository {
 
     // save to db
     await SalesContractModel.findByIdAndUpdate(salesContractID, {
-      contractId: contractId,
+      contractId: address,
       status: SalesContractStatus.BANK_APPROVED,
     });
 
@@ -118,11 +118,33 @@ export class LoCRepository {
     if (!curUser.letterOfCredits) throw new NotFoundError("LC not found");
     for (let id of curUser.letterOfCredits) {
       const LC = await LoCModel.findById(id);
+      const curSalesContract = await SalesContractModel.findById(
+        LC.salesContract
+      );
       let startDateInDate = new Date(parseInt(LC.startDate)).toDateString();
+      let importer = await UserModel.findById(curSalesContract.importerID);
+      let exporter = await UserModel.findById(curSalesContract.exporterID);
+      let issuingBank = await UserModel.findById(
+        curSalesContract.issuingBankID
+      );
+      let advisingBank = await UserModel.findById(
+        curSalesContract.advisingBankID
+      );
       // console.log(startDateInDate);
       const result = {
         LCID: LC._id.toString(),
         salesContract: LC.salesContract.toString(),
+        importerName: importer.username,
+        importerAddress: importer.address,
+        exporterName: exporter.username,
+        exporterAddress: exporter.address,
+        issuingBankName: issuingBank.username,
+        issuingBankAddress: issuingBank.address,
+        advisingBankName: advisingBank.username,
+        advisingBankAddress: advisingBank.address,
+        commodity: curSalesContract.commodity,
+        price: curSalesContract.price,
+        documentHash: LC.documentHash,
         invoice: LC.invoice,
         billOfExchange: LC.billOfExchange,
         billOfLading: LC.billOfLading,
@@ -151,15 +173,12 @@ export class LoCRepository {
     const curInvoice = await InvoiceModel.findById(curLC.invoice);
     const curBoE = await BoEModel.findById(curLC.billOfExchange);
     const curBoL = await BoLModel.findById(curLC.billOfLading);
-    let importer = (await UserModel.findById(curSalesContract.importerID))
-      .username;
-    let exporter = (await UserModel.findById(curSalesContract.exporterID))
-      .username;
-    let issuingBank = (await UserModel.findById(curSalesContract.issuingBankID))
-      .username;
-    let advisingBank = (
-      await UserModel.findById(curSalesContract.advisingBankID)
-    ).username;
+    let importer = await UserModel.findById(curSalesContract.importerID);
+    let exporter = await UserModel.findById(curSalesContract.exporterID);
+    let issuingBank = await UserModel.findById(curSalesContract.issuingBankID);
+    let advisingBank = await UserModel.findById(
+      curSalesContract.advisingBankID
+    );
     let deadlineInDate = new Date(
       parseInt(curSalesContract.deadline)
     ).toDateString();
@@ -170,11 +189,15 @@ export class LoCRepository {
         startDate: startDateInDate,
         rejectedReason: curLC.rejectedReason,
       },
-      salseContract: {
-        importer: importer,
-        exporter: exporter,
-        issuingBank: issuingBank,
-        advisingBank: advisingBank,
+      salesContract: {
+        importerName: importer.username,
+        importerAddress: importer.address,
+        exporterName: exporter.username,
+        exporterAddress: exporter.address,
+        issuingBankName: issuingBank.username,
+        issuingBankAddress: issuingBank.address,
+        advisingBankName: advisingBank.username,
+        advisingBankAddress: advisingBank.address,
         commodity: curSalesContract.commodity,
         price: curSalesContract.price,
         paymentMethod: curSalesContract.paymentMethod,

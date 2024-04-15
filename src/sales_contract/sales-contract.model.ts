@@ -8,25 +8,35 @@ export class RequiredDocument {
     invoice: boolean
 
     @prop({required: false})
-    billOfLading: boolean
+    bill_of_lading: boolean
 
     @prop({required: false})
-    billOfExchange: boolean
+    bill_of_exchange: boolean
 
     @prop({required: false})
     insurance: boolean
 
     @prop({required: false})
-    qualityCertificate: boolean
+    quantity_quality_certificate: boolean
+    
+    @prop({required: false})
+    certificate_of_origin: boolean
 
     @prop({required: false})
-    quantityCertificate: boolean
-
-    @prop({required: false})
-    packingList: boolean
+    package_list: boolean
 
     @prop({required: false})
     otherDocument: string
+}
+export class CommodityInfor {
+    @prop({required: false})
+    description: string
+
+    @prop({required: false})
+    quantity: string
+
+    @prop({required: false})
+    unit: string
 }
 export class SalesContract {
     @prop({required: false})
@@ -44,22 +54,22 @@ export class SalesContract {
     @prop({type: Types.ObjectId, required: true, ref: () => User})
     advisingBankID: Ref<User>
 
-    @prop({equired: true})
-    commodity: string;
+    @prop({required: false})
+    commodity: CommodityInfor[];
 
-    @prop({required: true})
+    @prop({required: false})
     price: string;
 
-    @prop({required: true})
+    @prop({required: false})
     paymentMethod: string;
 
-    @prop({required: true})
+    @prop({required: false})
     requiredDocument: RequiredDocument
     
     @prop({required: false})
     additionalInfo: string;
 
-    @prop({required: true})
+    @prop({required: false})
     deadline: string;
 
     @prop({required: true, enum: SalesContractStatus})

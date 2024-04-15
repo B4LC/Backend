@@ -6,6 +6,29 @@ import { Types } from "mongoose";
 import { SalesContract } from "../sales_contract/sales-contract.model";
 import { LetterOfCreditStatus } from "./enums/letter-of-credit.enum";
 
+class DocumentFolder {
+    @prop({required: false})
+    invoice: string;
+
+    @prop({required: false})
+    bill_of_exchange: string;
+
+    @prop({required: false})
+    bill_of_lading: string;
+
+    @prop({required: false})
+    quality_quantity_certificate: string;
+
+    @prop({required: false})
+    certificate_of_origin: string;
+    
+    @prop({required: false})
+    insurance: string;
+
+    @prop({required: false})
+    package_list: string;
+}
+
 export class LetterOfCredit {
     @prop({required: false})
     lcId: string;
@@ -22,7 +45,10 @@ export class LetterOfCredit {
     @prop({type: Types.ObjectId, required: false, ref: () => BillOfLading})
     billOfLading: Ref<BillOfLading>
 
-    @prop({equired: false})
+    @prop({required: false})
+    documentHash: DocumentFolder;
+
+    @prop({required: false})
     otherDocument: string;
 
     @prop({required: true})

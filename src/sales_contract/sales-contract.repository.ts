@@ -1,6 +1,7 @@
 import { SalesContractDto } from "./dtos/createSalesContract.dto";
 import { UserDocument } from "../user/user.model";
 import {
+  CommodityInfor,
   RequiredDocument,
   SalesContract,
   SalesContractDocument,
@@ -40,7 +41,6 @@ export class SalesContractRepository {
   }
 
   async createSalesContract(createSalesContractDto: SalesContractDto) {
-    // console.log(createSalesContractDto);
     const importerID = await this.findIdByUsername(
       createSalesContractDto.importer
     );
@@ -137,7 +137,7 @@ export class SalesContractRepository {
         exporter: string;
         issuingBank: string;
         advisingBank: string;
-        commodity: string;
+        commodity: CommodityInfor[];
         price: string;
         paymentMethod: string;
         requiredDocument: RequiredDocument;
@@ -210,7 +210,7 @@ export class SalesContractRepository {
         exporter: string;
         issuingBank: string;
         advisingBank: string;
-        commodity: string;
+        commodity: CommodityInfor[];
         price: string;
         paymentMethod: string;
         requiredDocument: RequiredDocument;
@@ -277,7 +277,7 @@ export class SalesContractRepository {
       return salesContract.toString() == salesContractID;
     });
     if (!curSalesContractID) throw new NotFoundError("Salescontract not found");
-    const salesContract = await SalesContractModel.findById(curSalesContractID);
+    const salesContract = await SalesContractModel.findById(curSalesContractID).select('-requiredDocument._id');
     const {
       importerID,
       exporterID,
@@ -291,24 +291,26 @@ export class SalesContractRepository {
       deadline,
       status,
     } = salesContract;
-    // console.log(importerID);
-    let importer = (await UserModel.findById(importerID)).username;
-    let exporter = (await UserModel.findById(exporterID)).username;
-    let issuingBank = (await UserModel.findById(issuingBankID)).username;
-    let advisingBank = (await UserModel.findById(advisingBankID)).username;
-    let deadlineInDate = new Date(parseInt(deadline)).toDateString();
+    let importer = (await UserModel.findById(importerID));
+    let exporter = (await UserModel.findById(exporterID));
+    let issuingBank = (await UserModel.findById(issuingBankID));
+    let advisingBank = (await UserModel.findById(advisingBankID));
     let doc = (requiredDocument != undefined) ? JSON.parse(JSON.stringify(requiredDocument)) : {};
     const result = {
-      importer: importer,
-      exporter: exporter,
-      issuingBank: issuingBank,
-      advisingBank: advisingBank,
+      importerName: importer.username,
+      importerAddress: importer.address,
+      exporterName: exporter.username,
+      exporterAddress: exporter.address,
+      issuingBankName: issuingBank.username,
+      issuingBankAddress: issuingBank.address,
+      advisingBankName: advisingBank.username,
+      advisingBankAddress: advisingBank.address,
       commodity: commodity,
       price: price,
       paymentMethod: paymentMethod,
       requiredDocument: doc,
       additionalInfo: additionalInfo,
-      deadlineInDate: deadlineInDate,
+      deadlineInDate: deadline,
       status: status,
     };
     return result;

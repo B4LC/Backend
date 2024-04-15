@@ -25,24 +25,22 @@ import { ContractEventController } from "./contract_event/contract-event.control
 import { FileController } from "./file/file.controller";
 require("dotenv").config();
 
-async function authorizationChecker(action: Action, roles: string[]) {
+async function authorizationChecker(action: Action) {
   const req: Request = action.request;
   const authHeader = req.headers.authorization || "";
-  const [type, token] = authHeader.split(" ");
-  if (type !== "Bearer" || !isJWT(token)) {
+  const [type, address] = authHeader.split(" ");
+  if (type !== "Bearer") {
     throw new UnauthorizedError("Unauthorized Error !");
   }
   try {
-    const user = verify(token, process.env.JWT_SECRET);
-    const { username, email, role } = user as Record<string, string>;
-    const userTokens = await redisClient.keys(`auth:${email}*`);
-    if (!roles.includes(role)) {
-      return false;
-    }
-    return userTokens.some(async (key: any) => {
-      const currentToken = await redisClient.get(key);
-      return currentToken === token;
-    });
+    // const user = await UserModel.findOne({ address: address }).lean();
+    // if(!user) {
+    //   return false;
+    // }
+    // if (!roles.includes(user.role)) {
+    //   return false;
+    // }
+    return true;
   } catch (e) {
     throw new UnauthorizedError(e.message);
   }
@@ -50,10 +48,10 @@ async function authorizationChecker(action: Action, roles: string[]) {
 async function currentUserChecker(action: Action) {
   const req: Request = action.request;
   const authHeader = req.headers.authorization;
-  const [, token] = authHeader.split(" ");
-  const curUser: any = decode(token);
+  const [, address] = authHeader.split(" ");
+  // const curUser: any = decode(token);
   try {
-    const user = await UserModel.findOne({ email: curUser.email }).lean();
+    const user = await UserModel.findOne({ address: address }).lean();
     return user;
   } catch (e) {
     console.log(e);
@@ -65,8 +63,9 @@ function main() {
   const app = express();
   app.use(express.json());
   app.use(cookieParser());
-  app.use(cors());
-  const port = 3000;
+  // app.use(cors());
+  app.use(cors({ origin: 'http://localhost:3000' }));
+  const port = 8000;
   mongoose
     .connect(process.env.MONGO_URL)
     .then(() => {

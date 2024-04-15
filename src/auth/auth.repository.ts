@@ -5,6 +5,7 @@ import { redisClient } from "../config/redis-client";
 import { LoginDto } from "./dtos/login.dto";
 import { UserModel } from "../model";
 import { SignupDto } from "./dtos/signup.dto";
+import { ethers } from "ethers";
 require("dotenv").config();
 
 export class AuthRepository {
@@ -17,16 +18,14 @@ export class AuthRepository {
   }
 
   private generateToken(
-    username: string,
-    email: string,
+    address: string,
     role: string,
     secret: string,
     expiresIn: string
   ): string {
     return sign(
       {
-        username,
-        email,
+        address,
         role,
       },
       secret,
@@ -35,11 +34,11 @@ export class AuthRepository {
   }
 
   private async logTokenToRedis(
-    email: string,
+    address: string,
     refreshToken: string,
     accessToken: string
   ) {
-    const redisKey = `auth:${email}:${refreshToken}`;
+    const redisKey = `auth:${address}:${refreshToken}`;
     await redisClient.set(redisKey, accessToken);
     redisClient.expire(
       redisKey,
@@ -47,17 +46,17 @@ export class AuthRepository {
     );
   }
 
-  private async removeTokenFromRedis(email: string, refreshToken: string) {
-    redisClient.del(`auth:${email}:${refreshToken}`);
+  private async removeTokenFromRedis(address: string, refreshToken: string) {
+    redisClient.del(`auth:${address}:${refreshToken}`);
   }
 
-  async getUserPassword(email: string) {
-    return UserModel.findOne({ email })
+  async getUserAddress(address: string) {
+    return UserModel.findOne({ address })
       .select({
         _id: 0,
         username: 1,
         email: 1,
-        password: 1,
+        address: 1,
         role: 1,
       })
       .lean();
@@ -82,46 +81,48 @@ export class AuthRepository {
   }
 
   async login(loginDto: LoginDto) {
-    const { email, password } = loginDto;
-    let role: string;
-    let username: string;
+    const { signedMessage, message, address, role } = loginDto;
     try {
-      const user = await this.getUserPassword(email);
-      if (!user) throw new Error(`Email ${email} does not exist.`);
-      if (!this.comparePassword(password, user.password))
-        throw new Error("Incorrect password");
-      role = user.role;
-      username = user.username;
-
       const {
         JWT_SECRET,
         JWT_EXPIRES_IN,
         JWT_REFRESH_SECRET,
         JWT_REFRESH_EXPIRES_IN,
       } = process.env;
-
+      
+      const recoveredAddress = ethers.utils.verifyMessage(message, signedMessage);
+      if(recoveredAddress !== address) {
+        throw new BadRequestError('Invalid signature');
+      }
+      const user = await UserModel.findOne({ address }).exec();
+      if(!user) {
+        const newUser = new UserModel({
+          address,
+          role,
+        });
+        await newUser.save();
+      }
       const accessToken = this.generateToken(
-        username,
-        email,
+        address,
         role,
         JWT_SECRET,
         JWT_EXPIRES_IN
       );
       const refreshToken = this.generateToken(
-        username,
-        email,
+        address,
         role,
         JWT_REFRESH_SECRET,
         JWT_REFRESH_EXPIRES_IN
       );
 
-      this.logTokenToRedis(email, refreshToken, accessToken);
+      this.logTokenToRedis(address, refreshToken, accessToken);
       return {
         accessToken,
         refreshToken,
       };
     } catch (e) {
-      throw new BadRequestError("Email or password is incorrect.");
+      console.log(e)
+      throw new BadRequestError("There's something wrong in login");
     }
   }
   /* eslint-disable @typescript-eslint/no-explicit-any */
@@ -140,34 +141,32 @@ export class AuthRepository {
         ignoreExpiration: true,
       });
 
-      const { username, email, role } = tokenPayload;
+      const { address, role } = tokenPayload;
       const hasRefreshToken = await redisClient.exists(
-        `auth:${email}:${refreshToken}`
+        `auth:${address}:${refreshToken}`
       );
       if (!hasRefreshToken) {
         throw new Error("Invalid refresh token.");
       }
-      this.removeTokenFromRedis(email, refreshToken);
-      if (refreshPayload.email !== email) {
+      this.removeTokenFromRedis(address, refreshToken);
+      if (refreshPayload.address !== address) {
         throw new Error("Tokens mismatch.");
       }
 
       const newAccessToken = this.generateToken(
-        username,
-        email,
+        address,
         role,
         JWT_SECRET,
         JWT_EXPIRES_IN
       );
       const newRefreshToken = this.generateToken(
-        username,
-        email,
+        address,
         role,
         JWT_REFRESH_SECRET,
         JWT_REFRESH_EXPIRES_IN
       );
 
-      this.logTokenToRedis(email, newRefreshToken, newAccessToken);
+      this.logTokenToRedis(address, newRefreshToken, newAccessToken);
 
       return {
         accessToken: newAccessToken,
@@ -182,8 +181,8 @@ export class AuthRepository {
   async logout(refreshToken: string) {
     try {
       const payload = verify(refreshToken, process.env.JWT_REFRESH_SECRET);
-      const { email } = payload as Record<string, string>;
-      redisClient.del(`auth:${email}:${refreshToken}`);
+      const { address } = payload as Record<string, string>;
+      redisClient.del(`auth:${address}:${refreshToken}`);
     } catch (e) {
       throw new BadRequestError(e.message);
     }

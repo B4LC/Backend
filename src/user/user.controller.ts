@@ -1,4 +1,4 @@
-import { BadRequestError, Body, CurrentUser, Get, JsonController, Put, Req } from "routing-controllers";
+import { BadRequestError, Body, CurrentUser, Get, JsonController, Post, Put, Req } from "routing-controllers";
 import { UserService } from "./user.service";
 import { OpenAPI } from "routing-controllers-openapi";
 import { UserDocument } from "./user.model";
@@ -10,9 +10,10 @@ export class UserController {
     
     @Get("")
     @OpenAPI({security: [{ BearerAuth: [] }]})
-    async getUserInfo(@CurrentUser({required: true}) user: UserDocument) {
+    async getUserInfo(@CurrentUser({required: true}) user: UserDocument, @Req() req: any) {
+    // async getUserInfo(@Req() req: any) {
         try {
-            return this.userService.getUserInfo(user._id.toString());
+            return this.userService.getUserInfo(user.address);
         }
         catch(err) {
             throw new BadRequestError(err.message);

@@ -5,8 +5,8 @@ import { LoCRepository } from "./letter-of-credit.repository";
 export class LoCService {
     private readonly LoCRepository = new LoCRepository();
 
-    async createLC(userID: string, salesContractID: string) {
-        return this.LoCRepository.createLC(userID, salesContractID);
+    async createLC(userID: string, salesContractID: string, address: string) {
+        return this.LoCRepository.createLC(userID, salesContractID, address);
     }
 
     async updateLC(userID: string, LCID: string, updateLCDto: UpdateLCDto) {

@@ -52,7 +52,7 @@ export class LoCController {
     @Req() req: any
   ) {
     try {
-      return this.LoCService.createLC(user._id.toString(), req.body.salesContractID);
+      return this.LoCService.createLC(user._id.toString(), req.body.salesContractID, req.body.address);
     } catch (err) {
       throw new BadRequestError(err.message);
     }
