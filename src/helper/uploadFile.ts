@@ -19,9 +19,9 @@ export async function uploadDocument(curLC: LoCDocument) {
     const curBoE = await BoEModel.findOne({_id: curLC.billOfExchange})
     const curBoL = await BoLModel.findOne({_id: curLC.billOfLading})
     if(curInvoice?.status == InvoiceStatus.APRROVED && curBoE?.status == BoEStatus.APRROVED) {
-        let contract = getContract();
+        // let contract = getContract();
         // console.log(contract);
-        await contract.uploadDocument(parseInt(curLC.lcId), curInvoice.hash, curBoE.hash, "", "");
+        // await contract.uploadDocument(parseInt(curLC.lcId), curInvoice.hash, curBoE.hash, "", "");
         curLC.status = LetterOfCreditStatus.DOCUMENT_APPROVED;
         await curLC.save();
     }

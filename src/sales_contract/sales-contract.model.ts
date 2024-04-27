@@ -38,6 +38,13 @@ export class CommodityInfor {
     @prop({required: false})
     unit: string
 }
+export interface ShipmentInfor {
+    from: string;
+    to: string;
+    partialShipment: boolean;
+    transhipment: boolean;
+    latestShipmentDate: string;
+}
 export class SalesContract {
     @prop({required: false})
     contractId: string;
@@ -61,10 +68,16 @@ export class SalesContract {
     price: string;
 
     @prop({required: false})
+    currency: string;
+
+    @prop({required: false})
     paymentMethod: string;
 
     @prop({required: false})
     requiredDocument: RequiredDocument
+
+    @prop({required: false})
+    shipmentInformation: ShipmentInfor
     
     @prop({required: false})
     additionalInfo: string;

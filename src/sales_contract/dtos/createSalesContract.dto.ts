@@ -13,6 +13,7 @@ export class SalesContractDto {
     }
   ];
   price: string;
+  currency: string;
   paymentMethod: string;
   requiredDocument: {
     invoice: boolean;
@@ -23,6 +24,13 @@ export class SalesContractDto {
     certificate_of_origin: boolean;
     package_list: boolean;
   };
+  shipmentInformation: {
+    from: string;
+    to: string;
+    partialShipment: boolean;
+    transhipment: boolean;
+    latestShipmentDate: string;
+  }
   additionalInfo: string;
   deadline: string;
 }

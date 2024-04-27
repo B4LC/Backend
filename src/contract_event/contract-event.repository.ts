@@ -28,19 +28,19 @@ export class ContractEventRepository {
       );
       // console.log(salesContractCreatedEvent);
     const LcCreatedEvent = await this.fetchData.LcCreatedEvent(
-      curLC.lcId
+      curLC.LcAddress
     );
     const LcApprovedEvent = await this.fetchData.LcApprovedEvent(
-      curLC.lcId
+      curLC.LcAddress
     );
     const LcRejectedEvent = await this.fetchData.LcRejectedEvent(
-      curLC.lcId
+      curLC.LcAddress
     );
     const LcStatusChangedEvent = await this.fetchData.LcStatusChangedEvent(
-      curLC.lcId
+      curLC.LcAddress
     );
     const docUploadedEvent = await this.fetchData.docUploadedEvent(
-      curLC.lcId
+      curLC.LcAddress
     );
     return {
       salesContractCreatedEvent,

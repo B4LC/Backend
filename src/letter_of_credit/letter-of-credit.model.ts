@@ -31,7 +31,7 @@ class DocumentFolder {
 
 export class LetterOfCredit {
     @prop({required: false})
-    lcId: string;
+    LcAddress: string;
 
     @prop({type: Types.ObjectId, required: true, ref: () => SalesContract})
     salesContract: Ref<SalesContract>;

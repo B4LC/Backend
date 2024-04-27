@@ -5,6 +5,7 @@ import {
   RequiredDocument,
   SalesContract,
   SalesContractDocument,
+  ShipmentInfor,
 } from "./sales-contract.model";
 import { SalesContractStatus } from "./enums/sales-contract.enum";
 import { UserModel, SalesContractModel } from "../model";
@@ -60,7 +61,11 @@ export class SalesContractRepository {
     const deadlineTimestamp = new Date(createSalesContractDto.deadline)
       .getTime()
       .toString();
-
+    createSalesContractDto.shipmentInformation.latestShipmentDate = new Date(
+      createSalesContractDto.shipmentInformation.latestShipmentDate
+    )
+      .getTime()
+      .toString();
     const newSaleContract = new SalesContractModel({
       exporterID: new mongoose.Types.ObjectId(exporterID),
       importerID: new mongoose.Types.ObjectId(importerID),
@@ -68,8 +73,10 @@ export class SalesContractRepository {
       advisingBankID: new mongoose.Types.ObjectId(advisingBankID),
       commodity: createSalesContractDto.commodity,
       price: createSalesContractDto.price,
+      currency: createSalesContractDto.currency,
       paymentMethod: createSalesContractDto.paymentMethod,
       additionalInfo: createSalesContractDto.additionalInfo,
+      shipmentInformation: createSalesContractDto.shipmentInformation,
       requiredDocument: createSalesContractDto.requiredDocument,
       deadline: deadlineTimestamp,
       status: SalesContractStatus.CREATED,
@@ -106,6 +113,11 @@ export class SalesContractRepository {
     const deadlineTimestamp = new Date(updateSalesContractDto.deadline)
       .getTime()
       .toString();
+    updateSalesContractDto.shipmentInformation.latestShipmentDate = new Date(
+      updateSalesContractDto.shipmentInformation.latestShipmentDate
+    )
+      .getTime()
+      .toString();
     if (!importerID || !exporterID || !issuingBankID || !advisingBankID) {
       return { message: "Username not found" };
     }
@@ -117,8 +129,10 @@ export class SalesContractRepository {
         advisingBankID: advisingBankID,
         commodity: updateSalesContractDto.commodity,
         price: updateSalesContractDto.price,
+        currency: updateSalesContractDto.currency,
         paymentMethod: updateSalesContractDto.paymentMethod,
         requiredDocument: updateSalesContractDto.requiredDocument,
+        shipmentInformation: updateSalesContractDto.shipmentInformation,
         additionalInfo: updateSalesContractDto.additionalInfo,
         deadline: deadlineTimestamp,
       });
@@ -139,9 +153,8 @@ export class SalesContractRepository {
         advisingBank: string;
         commodity: CommodityInfor[];
         price: string;
+        currency: string;
         paymentMethod: string;
-        requiredDocument: RequiredDocument;
-        additionalInfo: string;
         deadlineInDate: string;
         status: SalesContractStatus;
       }[] = [];
@@ -163,9 +176,8 @@ export class SalesContractRepository {
               advisingBankID,
               commodity,
               price,
+              currency,
               paymentMethod,
-              requiredDocument,
-              additionalInfo,
               deadline,
               status,
             } = salesContract;
@@ -176,13 +188,7 @@ export class SalesContractRepository {
               .username;
             let advisingBank = (await UserModel.findById(advisingBankID))
               .username;
-            let doc =
-              requiredDocument != undefined
-                ? JSON.parse(JSON.stringify(requiredDocument))
-                : {};
-
             const deadlineInDate = new Date(parseInt(deadline)).toDateString();
-
             const result = {
               salescontract_id: salesContractID.toString(),
               importer: importer,
@@ -191,9 +197,8 @@ export class SalesContractRepository {
               advisingBank: advisingBank,
               commodity: commodity,
               price: price,
+              currency: currency,
               paymentMethod: paymentMethod,
-              requiredDocument: doc,
-              additionalInfo: additionalInfo,
               deadlineInDate: deadlineInDate,
               status: status,
             };
@@ -212,9 +217,8 @@ export class SalesContractRepository {
         advisingBank: string;
         commodity: CommodityInfor[];
         price: string;
+        currency: string;
         paymentMethod: string;
-        requiredDocument: RequiredDocument;
-        additionalInfo: string;
         deadlineInDate: string;
         status: SalesContractStatus;
       }[] = [];
@@ -225,7 +229,6 @@ export class SalesContractRepository {
         if (!salesContract) {
           throw new NotFoundError("salescontract not found");
         }
-        // console.log(salesContract);
         const {
           importerID,
           exporterID,
@@ -233,9 +236,8 @@ export class SalesContractRepository {
           advisingBankID,
           commodity,
           price,
+          currency,
           paymentMethod,
-          requiredDocument,
-          additionalInfo,
           deadline,
           status,
         } = salesContract;
@@ -245,10 +247,6 @@ export class SalesContractRepository {
         let issuingBank = (await UserModel.findById(issuingBankID)).username;
         let advisingBank = (await UserModel.findById(advisingBankID)).username;
         let deadlineInDate = new Date(parseInt(deadline)).toDateString();
-        let doc =
-          requiredDocument != undefined
-            ? JSON.parse(JSON.stringify(requiredDocument))
-            : {};
         // console.log(importer);
         const result = {
           salescontract_id: salesContractID.toString(),
@@ -258,12 +256,12 @@ export class SalesContractRepository {
           advisingBank: advisingBank,
           commodity: commodity,
           price: price,
+          currency: currency,
           paymentMethod: paymentMethod,
-          requiredDocument: doc,
-          additionalInfo: additionalInfo,
           deadlineInDate: deadlineInDate,
           status: status,
         };
+        console.log(result)
         agreements.push(result);
       }
       return agreements.reverse();
@@ -277,7 +275,9 @@ export class SalesContractRepository {
       return salesContract.toString() == salesContractID;
     });
     if (!curSalesContractID) throw new NotFoundError("Salescontract not found");
-    const salesContract = await SalesContractModel.findById(curSalesContractID).select('-requiredDocument._id');
+    const salesContract = await SalesContractModel.findById(
+      curSalesContractID
+    ).select({ "requiredDocument._id": 0, "shipmentInformation._id": 0 });
     const {
       importerID,
       exporterID,
@@ -285,17 +285,22 @@ export class SalesContractRepository {
       advisingBankID,
       commodity,
       price,
+      currency,
       paymentMethod,
       requiredDocument,
+      shipmentInformation,
       additionalInfo,
       deadline,
       status,
     } = salesContract;
-    let importer = (await UserModel.findById(importerID));
-    let exporter = (await UserModel.findById(exporterID));
-    let issuingBank = (await UserModel.findById(issuingBankID));
-    let advisingBank = (await UserModel.findById(advisingBankID));
-    let doc = (requiredDocument != undefined) ? JSON.parse(JSON.stringify(requiredDocument)) : {};
+    let importer = await UserModel.findById(importerID);
+    let exporter = await UserModel.findById(exporterID);
+    let issuingBank = await UserModel.findById(issuingBankID);
+    let advisingBank = await UserModel.findById(advisingBankID);
+    let doc =
+      requiredDocument != undefined
+        ? JSON.parse(JSON.stringify(requiredDocument))
+        : {};
     const result = {
       importerName: importer.username,
       importerAddress: importer.address,
@@ -307,10 +312,12 @@ export class SalesContractRepository {
       advisingBankAddress: advisingBank.address,
       commodity: commodity,
       price: price,
+      currency: currency,
       paymentMethod: paymentMethod,
       requiredDocument: doc,
+      shipmentInformation: shipmentInformation,
       additionalInfo: additionalInfo,
-      deadlineInDate: deadline,
+      deadline: deadline,
       status: status,
     };
     return result;
