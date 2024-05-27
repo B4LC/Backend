@@ -5,6 +5,10 @@ import { Invoice } from "./invoice/invoice.model";
 import { SalesContract } from "./sales_contract/sales-contract.model";
 import { User } from "./user/user.model";
 import { LetterOfCredit } from "./letter_of_credit/letter-of-credit.model";
+import { Insurance } from "./insurance/insurance.model";
+import { PackageList } from "./package_list/package-list.model";
+import { QuantityQualityCertificate } from "./quantity_quality_certificate/quantity-quality-certificate.model";
+import { CertificateOfOrigin } from "./certificate_of_origin/certificate-of-origin.model";
 
 export const UserModel = getModelForClass(User);
 export const InvoiceModel = getModelForClass(Invoice);
@@ -12,3 +16,7 @@ export const BoEModel = getModelForClass(BillOfExchange);
 export const BoLModel = getModelForClass(BillOfLading);
 export const SalesContractModel = getModelForClass(SalesContract);
 export const LoCModel = getModelForClass(LetterOfCredit);
+export const InsuranceModel = getModelForClass(Insurance);
+export const PackageListModel = getModelForClass(PackageList);
+export const QuantityQualityCertificateModel = getModelForClass(QuantityQualityCertificate);
+export const CertificateOfOriginModel = getModelForClass(CertificateOfOrigin);

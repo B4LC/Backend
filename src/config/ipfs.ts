@@ -5,16 +5,17 @@ require("dotenv").config();
 const JWT = process.env.PINATA_JWT;
 
 const saveToIPFS = async (url: string) => {
+  const fileName = url.split('/').pop();
   try {
     const res = await axios.get(url, {responseType: 'arraybuffer'});
     const fileData = Buffer.from(res.data);
-    fs.writeFileSync("./files/tmp.pdf", fileData);
+    fs.writeFileSync(fileName, fileData);
   }
   catch(e) {
     console.log(e);
   }
   const formData = new FormData();
-  const file = fs.createReadStream("./files/tmp.pdf")
+  const file = fs.createReadStream(fileName)
   // const file = fs.readFileSync(url);
   formData.append("file", file);
   try {

@@ -46,8 +46,6 @@ export interface ShipmentInfor {
     latestShipmentDate: string;
 }
 export class SalesContract {
-    @prop({required: false})
-    contractId: string;
     
     @prop({type: Types.ObjectId, required: true, ref: () => User})
     importerID: Ref<User>;

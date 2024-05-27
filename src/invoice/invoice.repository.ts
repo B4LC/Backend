@@ -81,7 +81,7 @@ export class InvoiceRepository {
       await newInvoice.save();
       await LoCModel.updateMany(
         { _id: curLC._id },
-        { $set: { invoice: newInvoice._id } }
+        { $set: { 'document.invoice': newInvoice._id } }
       );
       return { message: "Upload invoice successfully" };
     }
@@ -130,8 +130,8 @@ export class InvoiceRepository {
       userID !== curSalesContract.advisingBankID.toString()
     ) {
       throw new UnauthorizedError("Unauthorized to approve document");
-    } else if (curLC.invoice) {
-      const curInvoice = await InvoiceModel.findById(curLC.invoice);
+    } else if (curLC.document.invoice) {
+      const curInvoice = await InvoiceModel.findById(curLC.document.invoice);
       curInvoice.status = InvoiceStatus.APRROVED;
       // save to ipfs
       const cid = await uploadFile(curInvoice.file_path);
@@ -154,8 +154,8 @@ export class InvoiceRepository {
       userID !== curSalesContract.advisingBankID.toString()
     ) {
       throw new UnauthorizedError("Unauthorized to reject document");
-    } else if (curLC.invoice) {
-      const curInvoice = await InvoiceModel.findById(curLC.invoice);
+    } else if (curLC.document.invoice) {
+      const curInvoice = await InvoiceModel.findById(curLC.document.invoice);
       curInvoice.status = InvoiceStatus.REJECTED;
       await curInvoice.save();
       return { message: "Invoice rejected" };

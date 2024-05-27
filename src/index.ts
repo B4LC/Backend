@@ -9,11 +9,7 @@ import {
   UnauthorizedError,
   useExpressServer,
 } from "routing-controllers";
-import { verify, decode } from "jsonwebtoken";
-import { isJWT } from "class-validator";
 import { UserModel } from "./model";
-import { redisClient } from "./config/redis-client";
-import { AuthController } from "./auth/auth.controller";
 import { SalesContractController } from "./sales_contract/sales-contract.controller";
 import { LoCController } from "./letter_of_credit/letter-of-credit.controller";
 import cors from "cors";
@@ -21,8 +17,8 @@ import { InvoiceController } from "./invoice/invoice.controller";
 import { UserController } from "./user/user.controller";
 import { BoLController } from "./bill_of_lading/bill-of-lading.controller";
 import { BoEController } from "./bill_of_exchange/bill-of-exchange.controller";
-import { ContractEventController } from "./contract_event/contract-event.controller";
 import { FileController } from "./file/file.controller";
+import { DocumentController } from "./document/document.controller";
 require("dotenv").config();
 
 async function authorizationChecker(action: Action) {
@@ -52,6 +48,7 @@ async function currentUserChecker(action: Action) {
   // const curUser: any = decode(token);
   try {
     const user = await UserModel.findOne({ address: address }).lean();
+    console.log(user)
     return user;
   } catch (e) {
     console.log(e);
@@ -79,15 +76,14 @@ function main() {
       excludeExtraneousValues: true,
     },
     controllers: [
-      AuthController,
       UserController,
       SalesContractController,
       LoCController,
       InvoiceController,
       BoLController,
       BoEController,
-      ContractEventController,
-      FileController
+      FileController,
+      DocumentController
     ],
     authorizationChecker,
     currentUserChecker,
@@ -100,7 +96,6 @@ function main() {
 }
 main();
 process.on('exit', () => {
-  redisClient.quit();
   mongoose.disconnect();
 })
 

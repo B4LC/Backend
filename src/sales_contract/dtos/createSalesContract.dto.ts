@@ -33,4 +33,5 @@ export class SalesContractDto {
   }
   additionalInfo: string;
   deadline: string;
+  token: string;
 }

@@ -36,4 +36,8 @@ export class LoCService {
     async deleteLC(userID: string, LCID: string) {
         return this.LoCRepository.deleteLC(userID, LCID);
     }
+
+    async getLCActor(userID: string, LCID: string) {
+        return this.LoCRepository.getLCActor(userID, LCID);
+    }
 }

@@ -1,4 +1,13 @@
-import { BadRequestError, Body, CurrentUser, Get, JsonController, Post, Put, Req } from "routing-controllers";
+import {
+  BadRequestError,
+  Body,
+  CurrentUser,
+  Get,
+  JsonController,
+  Post,
+  Put,
+  Req,
+} from "routing-controllers";
 import { UserService } from "./user.service";
 import { OpenAPI } from "routing-controllers-openapi";
 import { UserDocument } from "./user.model";
@@ -6,50 +15,51 @@ import { ChangeProfile } from "./dtos/changeProfile.dto";
 
 @JsonController("/user")
 export class UserController {
-    private readonly userService = new UserService();
-    
-    @Get("")
-    @OpenAPI({security: [{ BearerAuth: [] }]})
-    async getUserInfo(@CurrentUser({required: true}) user: UserDocument, @Req() req: any) {
-    // async getUserInfo(@Req() req: any) {
-        try {
-            return this.userService.getUserInfo(user.address);
-        }
-        catch(err) {
-            throw new BadRequestError(err.message);
-        }
-    }
+  private readonly userService = new UserService();
 
-    @Get("/banks")
-    @OpenAPI({security: [{ BearerAuth: [] }]})
-    async getAllBank() {
-        try {
-            return this.userService.getAllBank();
-        }
-        catch(err) {
-            throw new BadRequestError(err.message);
-        }
+  @Get("")
+  @OpenAPI({ security: [{ BearerAuth: [] }] })
+  // async getUserInfo(@CurrentUser({required: true}) user: UserDocument, @Req() req: any) {
+  async getUserInfo(@Req() req: any) {
+    try {
+      const authHeader = req.headers.authorization || "";
+      const [type, address] = authHeader.split(" ");
+      return this.userService.getUserInfo(address);
+    } catch (err) {
+      throw new BadRequestError(err.message);
     }
+  }
 
-    @Get("/customers")
-    @OpenAPI({security: [{ BearerAuth: [] }]})
-    async getAllCustomer() {
-        try {
-            return this.userService.getAllCustomer();
-        }
-        catch(err) {
-            throw new BadRequestError(err.message);
-        }
+  @Get("/banks")
+  @OpenAPI({ security: [{ BearerAuth: [] }] })
+  async getAllBank() {
+    try {
+      return this.userService.getAllBank();
+    } catch (err) {
+      throw new BadRequestError(err.message);
     }
+  }
 
-    @Put("/change/profile")
-    @OpenAPI({security: [{ BearerAuth: [] }]})
-    async changeProfile(@CurrentUser({required: true}) user: UserDocument, @Req() req: any) {
-        try {
-            return this.userService.changeProfile(user._id.toString(), req.body);
-        }
-        catch(err) {
-            throw new BadRequestError(err.message);
-        }
+  @Get("/customers")
+  @OpenAPI({ security: [{ BearerAuth: [] }] })
+  async getAllCustomer() {
+    try {
+      return this.userService.getAllCustomer();
+    } catch (err) {
+      throw new BadRequestError(err.message);
     }
+  }
+
+  @Put("/change/profile")
+  @OpenAPI({ security: [{ BearerAuth: [] }] })
+  async changeProfile(
+    @CurrentUser({ required: true }) user: UserDocument,
+    @Req() req: any
+  ) {
+    try {
+      return this.userService.changeProfile(user._id.toString(), req.body);
+    } catch (err) {
+      throw new BadRequestError(err.message);
+    }
+  }
 }

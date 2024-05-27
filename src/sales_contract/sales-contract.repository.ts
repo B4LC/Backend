@@ -79,6 +79,7 @@ export class SalesContractRepository {
       shipmentInformation: createSalesContractDto.shipmentInformation,
       requiredDocument: createSalesContractDto.requiredDocument,
       deadline: deadlineTimestamp,
+      token: createSalesContractDto.token,
       status: SalesContractStatus.CREATED,
     });
 
@@ -135,6 +136,7 @@ export class SalesContractRepository {
         shipmentInformation: updateSalesContractDto.shipmentInformation,
         additionalInfo: updateSalesContractDto.additionalInfo,
         deadline: deadlineTimestamp,
+        token: updateSalesContractDto.token
       });
       return { message: "Update salescontract successfully" };
     } catch (err) {

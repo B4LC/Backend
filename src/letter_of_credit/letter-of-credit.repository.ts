@@ -13,7 +13,7 @@ import {
 } from "routing-controllers";
 import { LetterOfCreditStatus } from "./enums/letter-of-credit.enum";
 import { createLCDto } from "./dtos/createLC.dto";
-import mongoose from "mongoose";
+import mongoose, { ObjectId, Types } from "mongoose";
 import { UpdateLCDto } from "./dtos/updateLC.dto";
 import getContract from "../helper/contract";
 import { SalesContractStatus } from "../sales_contract/enums/sales-contract.enum";
@@ -26,7 +26,9 @@ export class LoCRepository {
   }
 
   async createLC(userID: string, salesContractID: string, address: string) {
-    const curSalesContract = await SalesContractModel.findById(salesContractID);
+    const curSalesContract = await SalesContractModel.findById(
+      salesContractID
+    ).select({ "requiredDocument._id": 0, "shipmentInformation._id": 0 });
     if (curSalesContract.issuingBankID.toString() != userID) {
       throw new UnauthorizedError("Unauthorized to create LC");
     }
@@ -71,17 +73,31 @@ export class LoCRepository {
     // const contractId = await salesContractCreatedPromise;
     // await contract.createLC(contractId, startDate);
     // const lcId = await LcCreatedPromise;
+    const fieldsWithEmptyString: { [key: string]: Types.ObjectId } = {};
+    for (const [key, value] of Object.entries(
+      curSalesContract.requiredDocument
+    )) {
+      if (key === "_doc") {
+        for (const [key, v] of Object.entries(value)) {
+          if (typeof v === "boolean" && v === true) {
+            fieldsWithEmptyString[key] = new Types.ObjectId(
+              "000000000000000000000000"
+            );
+          }
+        }
+      }
+    }
 
     const newLC = new LoCModel({
       LcAddress: address,
       salesContract: new mongoose.Types.ObjectId(salesContractID),
       startDate: startDate,
       status: LetterOfCreditStatus.CREATED,
+      document: fieldsWithEmptyString,
     });
 
     // save to db
     await SalesContractModel.findByIdAndUpdate(salesContractID, {
-      contractId: address,
       status: SalesContractStatus.BANK_APPROVED,
     });
 
@@ -117,10 +133,10 @@ export class LoCRepository {
     const curUser = await UserModel.findById({ _id: userID }).exec();
     if (!curUser.letterOfCredits) throw new NotFoundError("LC not found");
     for (let id of curUser.letterOfCredits) {
-      const LC = await LoCModel.findById(id);
+      const LC = await LoCModel.findById(id).select({ "document._id": 0 });
       const curSalesContract = await SalesContractModel.findById(
         LC.salesContract
-      );
+      ).select({ "requiredDocument._id": 0, "shipmentInformation._id": 0 });
       let startDateInDate = new Date(parseInt(LC.startDate)).toDateString();
       let importer = await UserModel.findById(curSalesContract.importerID);
       let exporter = await UserModel.findById(curSalesContract.exporterID);
@@ -130,29 +146,19 @@ export class LoCRepository {
       let advisingBank = await UserModel.findById(
         curSalesContract.advisingBankID
       );
-      // console.log(startDateInDate);
       const result = {
         _id: LC._id.toString(),
         LcAddress: LC.LcAddress,
         salesContract: LC.salesContract.toString(),
         importerName: importer.username,
-        importerAddress: importer.address,
         exporterName: exporter.username,
-        exporterAddress: exporter.address,
         issuingBankName: issuingBank.username,
-        issuingBankAddress: issuingBank.address,
         advisingBankName: advisingBank.username,
-        advisingBankAddress: advisingBank.address,
         commodity: curSalesContract.commodity,
         price: curSalesContract.price,
-        documentHash: LC.documentHash,
-        invoice: LC.invoice,
-        billOfExchange: LC.billOfExchange,
-        billOfLading: LC.billOfLading,
-        otherDocument: LC.otherDocument,
+        currency: curSalesContract.currency,
         startDate: startDateInDate,
         status: LC.status,
-        rejectedReason: LC.rejectedReason,
       };
       LCs.push(result);
     }
@@ -169,7 +175,7 @@ export class LoCRepository {
     const curLC = await LoCModel.findById(curLCID);
     const curSalesContract = await SalesContractModel.findById(
       curLC.salesContract
-    );
+    ).select({ "requiredDocument._id": 0, "shipmentInformation._id": 0 });
     if (!curSalesContract) throw new NotFoundError("Sales contract not found");
     const curInvoice = await InvoiceModel.findById(curLC.invoice);
     const curBoE = await BoEModel.findById(curLC.billOfExchange);
@@ -217,64 +223,6 @@ export class LoCRepository {
         additionalInfo: curSalesContract.additionalInfo,
         deadlineInDate: deadlineInDate,
         status: curSalesContract.status,
-      },
-      files: {
-        invoice: {
-          id: curInvoice?._id.toString(),
-          hash: curInvoice?.hash,
-          status: curInvoice?.status,
-          file_path: curInvoice?.file_path,
-          table: curInvoice?.table,
-          from_name: curInvoice?.from_name,
-          from_address: curInvoice?.from_address,
-          from_phone: curInvoice?.from_phone,
-          from_fax: curInvoice?.from_fax,
-          title: curInvoice?.title,
-          no: curInvoice?.no,
-          date: curInvoice?.date,
-          consignee: curInvoice?.consignee,
-          notify_party_name: curInvoice?.notify_party_name,
-          notify_party_address: curInvoice?.notify_party_address,
-          notify_party_phone: curInvoice?.notify_party_phone,
-          notify_party_fax: curInvoice?.notify_party_fax,
-          lc_no: curInvoice?.lc_no,
-          transport: curInvoice?.transport,
-          transport_no: curInvoice?.transport_no,
-          bill_no: curInvoice?.bill_no,
-          cont_seal_no: curInvoice?.cont_seal_no,
-          from: curInvoice?.from,
-          to: curInvoice?.to,
-        },
-        billOfExchange: {
-          id: curBoE?._id.toString(),
-          hash: curBoE?.hash,
-          file_path: curBoE?.file_path,
-          status: curBoE?.status,
-          no: curBoE?.no,
-          price: curBoE?.price,
-          date: curBoE?.date,
-          content: curBoE?.content,
-          to: curBoE?.to,
-        },
-        // billOfLading: {
-        // id: curBoL?._id.toString(),
-        // hash: curBoL?.hash,
-        // file: curBoL?.file,
-        // status: curBoL?.status,
-        // bookingNo: curBoL?.bookingNo,
-        // voyageNo: curBoL?.voyageNo,
-        // billType: curBoL?.billType,
-        // freightAndCharge: curBoL?.freightAndCharge,
-        // shipper: curBoL?.shipper,
-        // consignee: (await UserModel.findById(curBoL?.consignee))?.username,
-        // notifyParty: (await UserModel.findById(curBoL?.notifyParty))?.username,
-        // sealNo: curBoL?.sealNo,
-        // goodsDescription: curBoL?.goodsDescription,
-        // portOfLading: curBoL?.portOfLoading,
-        // portOfDischarge: curBoL?.portOfDischarge,
-        // portOfDelivery: curBoL?.portOfDelivery,
-        // additionalInfo: curBoL?.additionalInfo,
-        // }
       },
     };
     return result;
@@ -380,5 +328,59 @@ export class LoCRepository {
     } catch (err) {
       console.log(err);
     }
+  }
+
+  async getLCActor(userID: string, LCID: string) {
+    const curUser = await UserModel.findById(userID).exec();
+    if (!curUser) throw new NotFoundError("User not found");
+    const curLCID = curUser.letterOfCredits.find((id) => {
+      return id.toString() == LCID;
+    });
+    if (!curLCID) throw new NotFoundError("LC not found");
+    const curLC = await LoCModel.findById(curLCID);
+    const curSalesContract = await SalesContractModel.findById(
+      curLC.salesContract
+    ).select({ "requiredDocument._id": 0, "shipmentInformation._id": 0 });
+    if (!curSalesContract) throw new NotFoundError("Sales contract not found");
+    const importer = await UserModel.findById(curSalesContract.importerID)
+      .select({
+        username: 1,
+        address: 1,
+        role: 1,
+      })
+      .lean()
+      .exec();
+    const exporter = await UserModel.findById(curSalesContract.exporterID)
+      .select({
+        username: 1,
+        address: 1,
+        role: 1,
+      })
+      .lean()
+      .exec();
+    const issuingBank = await UserModel.findById(curSalesContract.issuingBankID)
+      .select({
+        username: 1,
+        address: 1,
+        role: 1,
+      })
+      .lean()
+      .exec();
+    const advisingBank = await UserModel.findById(
+      curSalesContract.advisingBankID
+    )
+      .select({
+        username: 1,
+        address: 1,
+        role: 1,
+      })
+      .lean()
+      .exec();
+    return {
+      importer,
+      exporter,
+      issuingBank,
+      advisingBank,
+    };
   }
 }

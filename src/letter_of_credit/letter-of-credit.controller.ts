@@ -143,4 +143,15 @@ export class LoCController {
       throw new BadRequestError(err.message);
     }
   }
+
+  @Get("/:letterofcredit_id/actor")
+  @OpenAPI({ security: [{ BearerAuth: [] }] })
+  async getLCACtor(@CurrentUser({required: true}) user: UserDocument, @Param('letterofcredit_id') LCID: string) {
+    try {
+      return this.LoCService.getLCActor(user._id.toString(), LCID);
+    }
+    catch(err) {
+      throw new BadRequestError(err.message);
+    }
+  }
 }
