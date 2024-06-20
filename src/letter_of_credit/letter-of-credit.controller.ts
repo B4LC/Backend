@@ -52,7 +52,11 @@ export class LoCController {
     @Req() req: any
   ) {
     try {
-      return this.LoCService.createLC(user._id.toString(), req.body.salesContractID, req.body.address);
+      return this.LoCService.createLC(
+        user._id.toString(),
+        req.body.salesContractID,
+        req.body.address
+      );
     } catch (err) {
       throw new BadRequestError(err.message);
     }
@@ -78,14 +82,13 @@ export class LoCController {
   }
 
   @Patch("/:letterofcredit_id/status")
-  @Authorized(UserRole.BANK)
   @OpenAPI({ security: [{ BearerAuth: [] }] })
   async updateLCStatus(
     @CurrentUser({ required: true }) user: UserDocument,
     @Param("letterofcredit_id") letterofcredit_id: string,
     @Req() req: any
   ) {
-    try {      
+    try {
       return this.LoCService.updateLCStatus(
         user._id.toString(),
         letterofcredit_id,
@@ -109,11 +112,14 @@ export class LoCController {
   @Patch("/:letterofcredit_id/approve")
   @Authorized(UserRole.BANK)
   @OpenAPI({ security: [{ BearerAuth: [] }] })
-  async approveLC(@CurrentUser({required: true}) user: UserDocument, @Param('letterofcredit_id') LCID: string, @Body() req: any) {
+  async approveLC(
+    @CurrentUser({ required: true }) user: UserDocument,
+    @Param("letterofcredit_id") LCID: string,
+    @Body() req: any
+  ) {
     try {
       return this.LoCService.approveLC(user._id.toString(), LCID);
-    }
-    catch(err) {
+    } catch (err) {
       throw new BadRequestError(err.message);
     }
   }
@@ -121,13 +127,16 @@ export class LoCController {
   @Patch("/:letterofcredit_id/reject")
   @Authorized(UserRole.BANK)
   @OpenAPI({ security: [{ BearerAuth: [] }] })
-  async rejectLC(@CurrentUser({required: true}) user: UserDocument, @Param('letterofcredit_id') LCID: string, @Body() req: any) {
+  async rejectLC(
+    @CurrentUser({ required: true }) user: UserDocument,
+    @Param("letterofcredit_id") LCID: string,
+    @Body() req: any
+  ) {
     try {
       console.log(req);
-      
+
       return this.LoCService.rejectLC(user._id.toString(), LCID, req.reason);
-    }
-    catch(err) {
+    } catch (err) {
       throw new BadRequestError(err.message);
     }
   }
@@ -135,22 +144,26 @@ export class LoCController {
   @Delete("/:letterofcredit_id")
   @Authorized(UserRole.BANK)
   @OpenAPI({ security: [{ BearerAuth: [] }] })
-  async deleteLC(@CurrentUser({required: true}) user: UserDocument, @Param('letterofcredit_id') LCID: string) {
+  async deleteLC(
+    @CurrentUser({ required: true }) user: UserDocument,
+    @Param("letterofcredit_id") LCID: string
+  ) {
     try {
       return this.LoCService.deleteLC(user._id.toString(), LCID);
-    }
-    catch(err) {
+    } catch (err) {
       throw new BadRequestError(err.message);
     }
   }
 
   @Get("/:letterofcredit_id/actor")
   @OpenAPI({ security: [{ BearerAuth: [] }] })
-  async getLCACtor(@CurrentUser({required: true}) user: UserDocument, @Param('letterofcredit_id') LCID: string) {
+  async getLCACtor(
+    @CurrentUser({ required: true }) user: UserDocument,
+    @Param("letterofcredit_id") LCID: string
+  ) {
     try {
       return this.LoCService.getLCActor(user._id.toString(), LCID);
-    }
-    catch(err) {
+    } catch (err) {
       throw new BadRequestError(err.message);
     }
   }

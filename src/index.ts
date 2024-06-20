@@ -19,6 +19,7 @@ import { BoLController } from "./bill_of_lading/bill-of-lading.controller";
 import { BoEController } from "./bill_of_exchange/bill-of-exchange.controller";
 import { FileController } from "./file/file.controller";
 import { DocumentController } from "./document/document.controller";
+import { PackageListController } from "./package_list/package-list.controller";
 require("dotenv").config();
 
 async function authorizationChecker(action: Action) {
@@ -48,7 +49,6 @@ async function currentUserChecker(action: Action) {
   // const curUser: any = decode(token);
   try {
     const user = await UserModel.findOne({ address: address }).lean();
-    console.log(user)
     return user;
   } catch (e) {
     console.log(e);
@@ -61,7 +61,7 @@ function main() {
   app.use(express.json());
   app.use(cookieParser());
   // app.use(cors());
-  app.use(cors({ origin: 'http://localhost:3000' }));
+  app.use(cors({ origin: "http://localhost:3000" }));
   const port = 8000;
   mongoose
     .connect(process.env.MONGO_URL)
@@ -82,8 +82,9 @@ function main() {
       InvoiceController,
       BoLController,
       BoEController,
+      PackageListController,
       FileController,
-      DocumentController
+      DocumentController,
     ],
     authorizationChecker,
     currentUserChecker,
@@ -95,7 +96,6 @@ function main() {
   });
 }
 main();
-process.on('exit', () => {
+process.on("exit", () => {
   mongoose.disconnect();
-})
-
+});

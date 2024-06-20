@@ -1,4 +1,9 @@
-import { Ref, getModelForClass, prop, DocumentType } from "@typegoose/typegoose";
+import {
+  Ref,
+  getModelForClass,
+  prop,
+  DocumentType,
+} from "@typegoose/typegoose";
 import { Types } from "mongoose";
 import { User } from "../user/user.model";
 import { BillType } from "./enums/bill-type.enum";
@@ -31,53 +36,53 @@ import { BoLStatus } from "./enums/bill-of-lading.enum";
 // }
 
 export class BillOfLading {
-    @prop({required: false})
-    hash: string;
+  @prop({ required: false })
+  hash: string;
 
-    @prop({required: true})
-    file: string;
+  @prop({ required: true })
+  file_path: string;
 
-    @prop({required: true, enum: BoLStatus})
-    status: BoLStatus;
+  @prop({ required: true, enum: BoLStatus })
+  status: BoLStatus;
 
-    // @prop({required: true})
-    // bookingNo: string;
+  // @prop({required: true})
+  // bookingNo: string;
 
-    // @prop({required: true})
-    // voyageNo: string;
+  // @prop({required: true})
+  // voyageNo: string;
 
-    // @prop({required: true, enum: BillType})
-    // billType: BillType;
+  // @prop({required: true, enum: BillType})
+  // billType: BillType;
 
-    // @prop({required: true, enum: ChargeType})
-    // freightAndCharge: ChargeType;
+  // @prop({required: true, enum: ChargeType})
+  // freightAndCharge: ChargeType;
 
-    // @prop({required: false, type: Shipper})
-    // shipper: Shipper;
+  // @prop({required: false, type: Shipper})
+  // shipper: Shipper;
 
-    // @prop({required: true, type: Types.ObjectId, ref: () => User})
-    // consignee: Ref<User>
+  // @prop({required: true, type: Types.ObjectId, ref: () => User})
+  // consignee: Ref<User>
 
-    // @prop({required: true, type: Types.ObjectId, ref: () => User})
-    // notifyParty: Ref<User>
+  // @prop({required: true, type: Types.ObjectId, ref: () => User})
+  // notifyParty: Ref<User>
 
-    // @prop({required: true})
-    // sealNo: string;
+  // @prop({required: true})
+  // sealNo: string;
 
-    // @prop({required: true, type: GoodsDescription})
-    // goodsDescription: GoodsDescription
+  // @prop({required: true, type: GoodsDescription})
+  // goodsDescription: GoodsDescription
 
-    // @prop({required: false})
-    // portOfLoading: string;
+  // @prop({required: false})
+  // portOfLoading: string;
 
-    // @prop({required: false})
-    // portOfDischarge: string;
+  // @prop({required: false})
+  // portOfDischarge: string;
 
-    // @prop({required: false})
-    // portOfDelivery: string;
+  // @prop({required: false})
+  // portOfDelivery: string;
 
-    // @prop({required: false})
-    // additionalInfo: string;
+  // @prop({required: false})
+  // additionalInfo: string;
 }
 
 export type BoLDocument = DocumentType<BillOfLading>;

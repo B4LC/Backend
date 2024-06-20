@@ -1,7 +1,7 @@
-import ContractAbi from "../constants/LoC.json";
+import ContractAbi from "../constants/TradeFinanceFactory.json";
 import { ethers } from "ethers";
 import { CONTRACT_ADDRESS } from "../constants";
-require('dotenv').config;
+require("dotenv").config;
 
 export default function getContract() {
   // const provider = new ethers.providers.Web3Provider(window.ethereum as any);
@@ -10,11 +10,13 @@ export default function getContract() {
   // console.log(contract);
   // return contract;
   // Create a provider using an HTTP provider (replace with your Ethereum node URL)
-  const provider = new ethers.providers.JsonRpcProvider(process.env.BLOCKCHAIN_NODE_URL);
-  const privateKey = process.env.PRIVATE_KEY; 
+  const provider = new ethers.providers.JsonRpcProvider(
+    process.env.BLOCKCHAIN_NODE_URL
+  );
+  const privateKey = process.env.PRIVATE_KEY;
   const wallet = new ethers.Wallet(privateKey, provider);
   const signer = wallet.connect(provider);
-  const contract = new ethers.Contract(CONTRACT_ADDRESS, ContractAbi.abi, signer);
+  const contract = new ethers.Contract(CONTRACT_ADDRESS, ContractAbi, signer);
 
   // console.log(contract);
   return contract;

@@ -99,67 +99,64 @@ export class Invoice {
 
   @prop({ required: false })
   status: InvoiceStatus;
-  
+
   @prop({ required: false })
   file_path: string;
-  
-  @prop({ required: false })
-  table: object[];
 
   @prop({ required: false })
   from_name: string;
-  
+
   @prop({ required: false })
   from_address: string;
-  
+
   @prop({ required: false })
   from_phone: string;
-  
+
   @prop({ required: false })
   from_fax: string;
-  
+
   @prop({ required: false })
   title: string;
-  
+
   @prop({ required: false })
   no: string;
-  
+
   @prop({ required: false })
   date: string;
-  
+
   @prop({ required: false })
   consignee: string;
-  
+
   @prop({ required: false })
   notify_party_name: string;
-  
+
   @prop({ required: false })
   notify_party_address: string;
-  
+
   @prop({ required: false })
   notify_party_phone: string;
-  
+
   @prop({ required: false })
   notify_party_fax: string;
-  
+
   @prop({ required: false })
   lc_no: string;
-  
+
   @prop({ required: false })
   transport: string;
-  
+
   @prop({ required: false })
   transport_no: string;
-  
+
   @prop({ required: false })
   bill_no: string;
-  
+
   @prop({ required: false })
   cont_seal_no: string;
-  
+
   @prop({ required: false })
   from: string;
-  
+
   @prop({ required: false })
   to: string;
 }

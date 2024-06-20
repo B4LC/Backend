@@ -29,7 +29,6 @@ export class UserRepository {
       curUser.username = userProfile.username;
       curUser.email = userProfile.email;
       curUser.phoneNumber = userProfile.phoneNumber;
-      curUser.address = userProfile.address;
       await curUser.save();
       return { message: "Update information successfully" };
     }
@@ -49,7 +48,7 @@ export class UserRepository {
       email: curUser?.email,
       phoneNumber: curUser?.phoneNumber,
       address: curUser?.address,
-      role: curUser?.role
+      role: curUser?.role,
     };
   }
 }

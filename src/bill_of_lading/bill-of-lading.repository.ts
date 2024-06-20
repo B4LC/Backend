@@ -42,7 +42,7 @@ export class BoLRepository {
     if (curBoL) {
       return {
         hash: curBoL.hash,
-        file: curBoL.file,
+        file: curBoL.file_path,
         status: curBoL.status,
       };
     } else {
@@ -60,13 +60,13 @@ export class BoLRepository {
       userID !== curSalesContract.advisingBankID.toString()
     ) {
       throw new UnauthorizedError("Unauthorized to approve document");
-    } else if (curLC.billOfLading) {
-      const curBoL = await BoLModel.findById(curLC.billOfLading);
+    } else if (curLC.document.bill_of_lading) {
+      const curBoL = await BoLModel.findById(curLC.document.bill_of_lading);
       curBoL.status = BoLStatus.APRROVED;
-      const cid = await uploadFile(curBoL.file);
+      const cid = await uploadFile(curBoL.file_path);
       curBoL.hash = cid;
       await curBoL.save();
-      await uploadDocument(curLC);
+      // await uploadDocument(curLC);
       return { message: "bill of lading approved" };
     } else {
       throw new NotFoundError("bill of lading not found");
@@ -83,8 +83,8 @@ export class BoLRepository {
       userID !== curSalesContract.advisingBankID.toString()
     ) {
       throw new UnauthorizedError("Unauthorized to reject document");
-    } else if (curLC.billOfLading) {
-      const curBoL = await BoLModel.findById(curLC.billOfLading);
+    } else if (curLC.document.bill_of_lading) {
+      const curBoL = await BoLModel.findById(curLC.document.bill_of_lading);
       curBoL.status = BoLStatus.REJECTED;
       await curBoL.save();
       return { message: "bill of lading rejected" };

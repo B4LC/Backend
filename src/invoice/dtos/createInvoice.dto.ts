@@ -1,6 +1,5 @@
 export class CreateInvoiceDto {
   file_path: string;
-  table: any;
   from_name: string;
   from_address: string;
   from_phone: string;

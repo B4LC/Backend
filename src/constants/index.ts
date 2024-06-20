@@ -1,6 +1,4 @@
-const CONTRACT_ADDRESS = "0xf22657Af36847977299719f54C6e8e71B4fB0a2b"
-const THEGRAPH_URI = "https://api.studio.thegraph.com/query/34554/b4lc-testv1/v4.1.1"
-export {
-    CONTRACT_ADDRESS,
-    THEGRAPH_URI
-}
+const CONTRACT_ADDRESS = "0xf2aF67510B5a7E58800babef50c40B3115b6Ea9A";
+const THEGRAPH_URI =
+  "https://api.studio.thegraph.com/query/34554/b4lc-testv2/v0.1.0";
+export { CONTRACT_ADDRESS, THEGRAPH_URI };

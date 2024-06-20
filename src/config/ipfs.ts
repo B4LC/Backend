@@ -1,21 +1,20 @@
 import axios from "axios";
-import fs from 'fs';
-import FormData from 'form-data';
+import fs from "fs";
+import FormData from "form-data";
 require("dotenv").config();
 const JWT = process.env.PINATA_JWT;
 
 const saveToIPFS = async (url: string) => {
-  const fileName = url.split('/').pop();
+  const fileName = url.split("/").pop();
   try {
-    const res = await axios.get(url, {responseType: 'arraybuffer'});
+    const res = await axios.get(url, { responseType: "arraybuffer" });
     const fileData = Buffer.from(res.data);
     fs.writeFileSync(fileName, fileData);
-  }
-  catch(e) {
+  } catch (e) {
     console.log(e);
   }
   const formData = new FormData();
-  const file = fs.createReadStream(fileName)
+  const file = fs.createReadStream(fileName);
   // const file = fs.readFileSync(url);
   formData.append("file", file);
   try {
@@ -29,7 +28,6 @@ const saveToIPFS = async (url: string) => {
         },
       }
     );
-    console.log(res.data);
     return res.data.IpfsHash;
   } catch (error) {
     console.log(error);

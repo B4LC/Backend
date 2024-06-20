@@ -136,7 +136,7 @@ export class SalesContractRepository {
         shipmentInformation: updateSalesContractDto.shipmentInformation,
         additionalInfo: updateSalesContractDto.additionalInfo,
         deadline: deadlineTimestamp,
-        token: updateSalesContractDto.token
+        token: updateSalesContractDto.token,
       });
       return { message: "Update salescontract successfully" };
     } catch (err) {
@@ -158,19 +158,21 @@ export class SalesContractRepository {
         currency: string;
         paymentMethod: string;
         deadlineInDate: string;
+        token: string;
         status: SalesContractStatus;
       }[] = [];
 
       const salesContractPromises = curUser.salesContracts.map(
         async (salesContractID) => {
-          const salesContract = await SalesContractModel.findById(
-            salesContractID
-          );
+          const salesContract = await SalesContractModel.findOne({
+            _id: salesContractID,
+            status: SalesContractStatus.EXPORTER_APPROVED,
+          })
+            .sort({ _id: -1 })
+            .exec();
           if (!salesContract) {
-            throw new NotFoundError("salescontract not found");
-          } else if (
-            salesContract.status == SalesContractStatus.EXPORTER_APPROVED
-          ) {
+            return agreements;
+          } else {
             const {
               importerID,
               exporterID,
@@ -181,6 +183,7 @@ export class SalesContractRepository {
               currency,
               paymentMethod,
               deadline,
+              token,
               status,
             } = salesContract;
 
@@ -202,6 +205,7 @@ export class SalesContractRepository {
               currency: currency,
               paymentMethod: paymentMethod,
               deadlineInDate: deadlineInDate,
+              token: token,
               status: status,
             };
             agreements.push(result);
@@ -209,7 +213,7 @@ export class SalesContractRepository {
         }
       );
       await Promise.all(salesContractPromises);
-      return agreements.reverse();
+      return agreements;
     } else {
       const agreements: {
         salescontract_id: string;
@@ -222,6 +226,7 @@ export class SalesContractRepository {
         currency: string;
         paymentMethod: string;
         deadlineInDate: string;
+        token: string;
         status: SalesContractStatus;
       }[] = [];
       for (let salesContractID of curUser.salesContracts) {
@@ -229,7 +234,7 @@ export class SalesContractRepository {
           salesContractID
         );
         if (!salesContract) {
-          throw new NotFoundError("salescontract not found");
+          return agreements;
         }
         const {
           importerID,
@@ -241,6 +246,7 @@ export class SalesContractRepository {
           currency,
           paymentMethod,
           deadline,
+          token,
           status,
         } = salesContract;
         // console.log(importerID);
@@ -261,9 +267,9 @@ export class SalesContractRepository {
           currency: currency,
           paymentMethod: paymentMethod,
           deadlineInDate: deadlineInDate,
+          token: token,
           status: status,
         };
-        console.log(result)
         agreements.push(result);
       }
       return agreements.reverse();
@@ -273,13 +279,11 @@ export class SalesContractRepository {
   async getSalesContractDetail(userID: string, salesContractID: string) {
     const curUser = await UserModel.findById(userID).exec();
     if (!curUser) throw new NotFoundError("User not found");
-    const curSalesContractID = curUser.salesContracts.find((salesContract) => {
-      return salesContract.toString() == salesContractID;
-    });
-    if (!curSalesContractID) throw new NotFoundError("Salescontract not found");
+
     const salesContract = await SalesContractModel.findById(
-      curSalesContractID
+      salesContractID
     ).select({ "requiredDocument._id": 0, "shipmentInformation._id": 0 });
+    if (!salesContract) throw new NotFoundError("Salescontract not found");
     const {
       importerID,
       exporterID,
@@ -293,6 +297,7 @@ export class SalesContractRepository {
       shipmentInformation,
       additionalInfo,
       deadline,
+      token,
       status,
     } = salesContract;
     let importer = await UserModel.findById(importerID);
@@ -320,6 +325,7 @@ export class SalesContractRepository {
       shipmentInformation: shipmentInformation,
       additionalInfo: additionalInfo,
       deadline: deadline,
+      token: token,
       status: status,
     };
     return result;

@@ -3,8 +3,7 @@ import { NotFoundError, UnauthorizedError } from "routing-controllers";
 import { InvoiceStatus } from "./enums/invoiceStatus.enum";
 import { uploadDocument, uploadFile } from "../helper/uploadFile";
 require("dotenv").config();
-import uploadToCloudinary from "../config/cloudinary";
-import { CreateInvoiceDto } from "./dtos/createInvoice.dto";
+import { Types } from "mongoose";
 
 export class InvoiceRepository {
   async createInvoice(LCID: string, userID: string, invoice: any) {
@@ -18,46 +17,24 @@ export class InvoiceRepository {
     ) {
       throw new UnauthorizedError("Unauthorized to upload document");
     }
-    const tableArray = Object.keys(invoice.table).map((rowKey) => {
-      const row = Object.values(invoice.table[rowKey]);
-      return row;
-    });
+    // const tableArray = Object.keys(invoice.table).map((rowKey) => {
+    //   const row = Object.values(invoice.table[rowKey]);
+    //   return row;
+    // });
 
-    console.log(tableArray);
+    // // console.log(tableArray);
 
-    // Convert the 2D array to an array of documents
-    const arrayToSave = tableArray.map((row) => ({ values: row }));
-    if (curLC.invoice) {
-      // const curInvoice = await InvoiceModel.findById(curLC.invoice);
-      await InvoiceModel.findByIdAndUpdate(curLC.invoice._id, {
-        file_path: invoice.file_path,
-        table: arrayToSave,
-        from_name: invoice.from_name,
-        from_address: invoice.from_address,
-        from_phone: invoice.from_phone,
-        from_fax: invoice.from_fax,
-        title: invoice.title,
-        no: invoice.no,
-        date: invoice.date,
-        consignee: invoice.consignee,
-        notify_party_name: invoice.notify_party_name,
-        notify_party_address: invoice.notify_party_address,
-        notify_party_phone: invoice.notify_party_phone,
-        notify_party_fax: invoice.notify_party_fax,
-        lc_no: invoice.lc_no,
-        transport: invoice.transport,
-        transport_no: invoice.transport_no,
-        bill_no: invoice.bill_no,
-        cont_seal_no: invoice.cont_seal_no,
-        from: invoice.from,
-        to: invoice.to,
-      });
-      return { message: "Update invoice successfully" };
-    } else {
+    // // Convert the 2D array to an array of documents
+    // const arrayToSave = tableArray.map((row) => ({ values: row }));
+    if (
+      curLC.document.invoice._id.equals(
+        new Types.ObjectId("000000000000000000000000")
+      )
+    ) {
       const newInvoice = new InvoiceModel({
         status: InvoiceStatus.USER_UPLOADED,
         file_path: invoice.file_path,
-        table: arrayToSave,
+        // table: arrayToSave,
         from_name: invoice.from_name,
         from_address: invoice.from_address,
         from_phone: invoice.from_phone,
@@ -81,9 +58,34 @@ export class InvoiceRepository {
       await newInvoice.save();
       await LoCModel.updateMany(
         { _id: curLC._id },
-        { $set: { 'document.invoice': newInvoice._id } }
+        { $set: { "document.invoice": newInvoice._id } }
       );
       return { message: "Upload invoice successfully" };
+    } else {
+      await InvoiceModel.findByIdAndUpdate(curLC.document.invoice._id, {
+        file_path: invoice.file_path,
+        // table: arrayToSave,
+        from_name: invoice.from_name,
+        from_address: invoice.from_address,
+        from_phone: invoice.from_phone,
+        from_fax: invoice.from_fax,
+        title: invoice.title,
+        no: invoice.no,
+        date: invoice.date,
+        consignee: invoice.consignee,
+        notify_party_name: invoice.notify_party_name,
+        notify_party_address: invoice.notify_party_address,
+        notify_party_phone: invoice.notify_party_phone,
+        notify_party_fax: invoice.notify_party_fax,
+        lc_no: invoice.lc_no,
+        transport: invoice.transport,
+        transport_no: invoice.transport_no,
+        bill_no: invoice.bill_no,
+        cont_seal_no: invoice.cont_seal_no,
+        from: invoice.from,
+        to: invoice.to,
+      });
+      return { message: "Update invoice successfully" };
     }
   }
 
@@ -94,7 +96,7 @@ export class InvoiceRepository {
         hash: curInvoice.hash,
         status: curInvoice.status,
         file_path: curInvoice.file_path,
-        table: curInvoice.table,
+        // table: curInvoice.table,
         from_name: curInvoice.from_name,
         from_address: curInvoice.from_address,
         from_phone: curInvoice.from_phone,
@@ -134,9 +136,9 @@ export class InvoiceRepository {
       const curInvoice = await InvoiceModel.findById(curLC.document.invoice);
       curInvoice.status = InvoiceStatus.APRROVED;
       // save to ipfs
-      const cid = await uploadFile(curInvoice.file_path);
-      curInvoice.hash = cid;
-      await curInvoice.save();
+      // const cid = await uploadFile(curInvoice.file_path);
+      // curInvoice.hash = cid;
+      // await curInvoice.save();
       await uploadDocument(curLC);
       return { message: "Invoice approved" };
     } else {

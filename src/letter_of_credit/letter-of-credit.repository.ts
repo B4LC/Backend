@@ -177,9 +177,6 @@ export class LoCRepository {
       curLC.salesContract
     ).select({ "requiredDocument._id": 0, "shipmentInformation._id": 0 });
     if (!curSalesContract) throw new NotFoundError("Sales contract not found");
-    const curInvoice = await InvoiceModel.findById(curLC.invoice);
-    const curBoE = await BoEModel.findById(curLC.billOfExchange);
-    const curBoL = await BoLModel.findById(curLC.billOfLading);
     let importer = await UserModel.findById(curSalesContract.importerID);
     let exporter = await UserModel.findById(curSalesContract.exporterID);
     let issuingBank = await UserModel.findById(curSalesContract.issuingBankID);
@@ -222,6 +219,7 @@ export class LoCRepository {
         shipmentInformation: curSalesContract.shipmentInformation,
         additionalInfo: curSalesContract.additionalInfo,
         deadlineInDate: deadlineInDate,
+        token: curSalesContract.token,
         status: curSalesContract.status,
       },
     };
@@ -275,18 +273,6 @@ export class LoCRepository {
     LCID: string,
     newStatus: LetterOfCreditStatus
   ) {
-    const curLC = await LoCModel.findById(LCID);
-    const curSalesContract = await SalesContractModel.findById(
-      curLC.salesContract
-    );
-    if (
-      curSalesContract.issuingBankID.toString() != userID &&
-      curSalesContract.advisingBankID.toString() != userID
-    ) {
-      throw new UnauthorizedError("Unauthorized to update LC");
-    }
-    // let contract = getContract();
-    // await contract.changeLcStatus(curLC.lcId, newStatus);
     await LoCModel.findByIdAndUpdate(LCID, {
       status: newStatus,
     });
@@ -311,18 +297,6 @@ export class LoCRepository {
       await SalesContractModel.updateMany(
         { ref: curLC.salesContract },
         { $unset: { ref: curLC.salesContract } }
-      );
-      await InvoiceModel.updateMany(
-        { ref: curLC.invoice },
-        { $unset: { ref: curLC.invoice } }
-      );
-      await BoEModel.updateMany(
-        { ref: curLC.billOfExchange },
-        { $unset: { ref: curLC.billOfExchange } }
-      );
-      await BoLModel.updateMany(
-        { ref: curLC.billOfLading },
-        { $unset: { ref: curLC.billOfLading } }
       );
       await UserModel.updateMany({ ref: LCID }, { $pull: { ref: LCID } });
     } catch (err) {
