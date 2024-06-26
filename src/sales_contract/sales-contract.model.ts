@@ -92,6 +92,9 @@ export class SalesContract {
 
   @prop({ required: true, enum: SalesContractStatus })
   status: SalesContractStatus;
+
+  @prop({ required: false })
+  rejectedReason: string;
 }
 
 export type SalesContractDocument = DocumentType<SalesContract>;

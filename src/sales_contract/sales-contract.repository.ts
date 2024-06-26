@@ -137,6 +137,7 @@ export class SalesContractRepository {
         additionalInfo: updateSalesContractDto.additionalInfo,
         deadline: deadlineTimestamp,
         token: updateSalesContractDto.token,
+        status: SalesContractStatus.UPDATED,
       });
       return { message: "Update salescontract successfully" };
     } catch (err) {
@@ -341,6 +342,23 @@ export class SalesContractRepository {
     curSalesContract.status = SalesContractStatus.EXPORTER_APPROVED;
     await curSalesContract.save();
     return { message: "Salescontract is approved" };
+  }
+
+  async rejectSalesContract(
+    userID: string,
+    salesContractID: string,
+    reason: string
+  ) {
+    const curSalesContract = await SalesContractModel.findById(salesContractID);
+    if (!curSalesContract) {
+      throw new NotFoundError("Salescontract not found");
+    }
+    if (curSalesContract.exporterID.toString() != userID)
+      throw new UnauthorizedError("Only exporter can reject");
+    curSalesContract.status = SalesContractStatus.EXPORTER_REJECTED;
+    curSalesContract.rejectedReason = reason;
+    await curSalesContract.save();
+    return { message: "Salescontract is rejected" };
   }
 
   async deleteSalesContract(userID: string, salesContractID: string) {

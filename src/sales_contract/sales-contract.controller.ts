@@ -25,11 +25,11 @@ import { isValidObjectId } from "mongoose";
 export class SalesContractController {
   private readonly salesContractService = new SalesContractService();
 
-  @Get('/:salescontract_id')
+  @Get("/:salescontract_id")
   @OpenAPI({ security: [{ BearerAuth: [] }] })
   async getSalesContractDetail(
     @CurrentUser({ required: true }) user: UserDocument,
-    @Param('salescontract_id') salescontract_id: string
+    @Param("salescontract_id") salescontract_id: string
   ) {
     try {
       if (!isValidObjectId(salescontract_id)) {
@@ -94,10 +94,36 @@ export class SalesContractController {
   @Patch("/:salescontract_id/approve")
   @OpenAPI({ security: [{ BearerAuth: [] }] })
   @Authorized(UserRole.USER)
-  async approveSalesContract(@CurrentUser({required: true}) user: UserDocument, @Param('salescontract_id') salescontract_id: string, @Body() req: any) {
+  async approveSalesContract(
+    @CurrentUser({ required: true }) user: UserDocument,
+    @Param("salescontract_id") salescontract_id: string,
+    @Body() req: any
+  ) {
     try {
-      return this.salesContractService.approveSalesContract(user._id.toString(), salescontract_id);
-    } catch(err) {
+      return this.salesContractService.approveSalesContract(
+        user._id.toString(),
+        salescontract_id
+      );
+    } catch (err) {
+      throw new BadRequestError(err.message);
+    }
+  }
+
+  @Patch("/:salescontract_id/reject")
+  @OpenAPI({ security: [{ BearerAuth: [] }] })
+  @Authorized(UserRole.USER)
+  async rejectSalesContract(
+    @CurrentUser({ required: true }) user: UserDocument,
+    @Param("salescontract_id") salescontract_id: string,
+    @Body() req: any
+  ) {
+    try {
+      return this.salesContractService.rejectSalesContract(
+        user._id.toString(),
+        salescontract_id,
+        req.reason
+      );
+    } catch (err) {
       throw new BadRequestError(err.message);
     }
   }
@@ -105,11 +131,16 @@ export class SalesContractController {
   @Delete("/:salescontract_id")
   @OpenAPI({ security: [{ BearerAuth: [] }] })
   @Authorized(UserRole.USER)
-  async deleteSalesContract(@CurrentUser({required: true}) user: UserDocument, @Param('salescontract_id') salescontract_id: string)  {
+  async deleteSalesContract(
+    @CurrentUser({ required: true }) user: UserDocument,
+    @Param("salescontract_id") salescontract_id: string
+  ) {
     try {
-      return this.salesContractService.deleteSalesContract(user._id.toString(), salescontract_id);
-    }
-    catch(err) {
+      return this.salesContractService.deleteSalesContract(
+        user._id.toString(),
+        salescontract_id
+      );
+    } catch (err) {
       throw new BadRequestError(err.message);
     }
   }

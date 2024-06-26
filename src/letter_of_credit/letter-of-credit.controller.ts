@@ -133,8 +133,6 @@ export class LoCController {
     @Body() req: any
   ) {
     try {
-      console.log(req);
-
       return this.LoCService.rejectLC(user._id.toString(), LCID, req.reason);
     } catch (err) {
       throw new BadRequestError(err.message);
