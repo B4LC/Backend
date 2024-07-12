@@ -117,7 +117,7 @@ export class PackageListRepository {
       const cid = await uploadFile(curPackageList.file_path);
       curPackageList.hash = cid;
       await curPackageList.save();
-      // await uploadDocument(curLC);
+      await uploadDocument(curLC);
       return { message: "Package list approved" };
     } else {
       throw new NotFoundError("Package list not found");

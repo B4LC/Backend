@@ -1,4 +1,5 @@
 import {
+  Authorized,
   BadRequestError,
   Body,
   CurrentUser,
@@ -12,6 +13,7 @@ import { UserService } from "./user.service";
 import { OpenAPI } from "routing-controllers-openapi";
 import { UserDocument } from "./user.model";
 import { ChangeProfile } from "./dtos/changeProfile.dto";
+import { UserRole } from "./enums/user-role.enum";
 
 @JsonController("/user")
 export class UserController {
@@ -25,6 +27,17 @@ export class UserController {
       const authHeader = req.headers.authorization || "";
       const [type, address] = authHeader.split(" ");
       return this.userService.getUserInfo(address);
+    } catch (err) {
+      throw new BadRequestError(err.message);
+    }
+  }
+
+  @Get("/all")
+  @OpenAPI({ security: [{ BearerAuth: [] }] })
+  @Authorized([UserRole.ADMIN])
+  async getAllUser() {
+    try {
+      return this.userService.getaAllUser();
     } catch (err) {
       throw new BadRequestError(err.message);
     }
@@ -58,6 +71,17 @@ export class UserController {
   ) {
     try {
       return this.userService.changeProfile(user._id.toString(), req.body);
+    } catch (err) {
+      throw new BadRequestError(err.message);
+    }
+  }
+
+  @Put("/change/account")
+  @OpenAPI({ security: [{ BearerAuth: [] }] })
+  @Authorized([UserRole.ADMIN])
+  async createUser(@Req() req: any) {
+    try {
+      return this.userService.createUser(req.body.user);
     } catch (err) {
       throw new BadRequestError(err.message);
     }

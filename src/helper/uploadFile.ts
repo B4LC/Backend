@@ -89,7 +89,7 @@ export async function uploadDocument(curLC: LoCDocument) {
     allDocStatus = true;
     files.push(curQuanQualCer.file_path);
   }
-
+  console.log(allDocStatus);
   if (allDocStatus == true) {
     const data = new FormData();
     for (let file_path of files) {

@@ -44,19 +44,6 @@
         "type": "address"
       }
     ],
-    "name": "activeLC",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "letterOfCreditAddress",
-        "type": "address"
-      }
-    ],
     "name": "approveLetterOfCredit",
     "outputs": [],
     "stateMutability": "nonpayable",
@@ -83,9 +70,9 @@
         "type": "address"
       },
       {
-        "internalType": "enum TradeFinance.LetterOfCreditStatus",
+        "internalType": "string",
         "name": "newStatus",
-        "type": "uint8"
+        "type": "string"
       }
     ],
     "name": "changeLcStatus",
@@ -142,6 +129,11 @@
           {
             "internalType": "string",
             "name": "price",
+            "type": "string"
+          },
+          {
+            "internalType": "string",
+            "name": "currency",
             "type": "string"
           },
           {
@@ -249,19 +241,6 @@
     ],
     "name": "CreateLetterOfCredit",
     "type": "event"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "letterOfCreditAddress",
-        "type": "address"
-      }
-    ],
-    "name": "deactiveLC",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
   },
   {
     "anonymous": false,
@@ -538,6 +517,12 @@
       {
         "indexed": false,
         "internalType": "string",
+        "name": "currency",
+        "type": "string"
+      },
+      {
+        "indexed": false,
+        "internalType": "string",
         "name": "paymentMethod",
         "type": "string"
       },
@@ -555,9 +540,9 @@
       },
       {
         "indexed": false,
-        "internalType": "enum TradeFinance.LetterOfCreditStatus",
+        "internalType": "string",
         "name": "status",
-        "type": "uint8"
+        "type": "string"
       },
       {
         "indexed": false,
@@ -612,6 +597,25 @@
       }
     ],
     "name": "LcInformation",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "TradeFinanceAddress",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "string",
+        "name": "status",
+        "type": "string"
+      }
+    ],
+    "name": "LcStatusChanged",
     "type": "event"
   },
   {
@@ -677,98 +681,6 @@
     ],
     "name": "RejectLetterOfCredit",
     "type": "event"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "LcAddress",
-        "type": "address"
-      },
-      {
-        "components": [
-          {
-            "internalType": "string",
-            "name": "description",
-            "type": "string"
-          },
-          {
-            "internalType": "string",
-            "name": "quantity",
-            "type": "string"
-          },
-          {
-            "internalType": "uint256",
-            "name": "unit",
-            "type": "uint256"
-          }
-        ],
-        "internalType": "struct TradeFinance.Commodity[]",
-        "name": "_commodity",
-        "type": "tuple[]"
-      },
-      {
-        "internalType": "string",
-        "name": "_price",
-        "type": "string"
-      },
-      {
-        "internalType": "string",
-        "name": "_paymentMethod",
-        "type": "string"
-      },
-      {
-        "internalType": "string",
-        "name": "_additionalInfo",
-        "type": "string"
-      },
-      {
-        "internalType": "uint256",
-        "name": "_deadline",
-        "type": "uint256"
-      },
-      {
-        "components": [
-          {
-            "internalType": "string",
-            "name": "from",
-            "type": "string"
-          },
-          {
-            "internalType": "string",
-            "name": "to",
-            "type": "string"
-          },
-          {
-            "internalType": "bool",
-            "name": "partialShipment",
-            "type": "bool"
-          },
-          {
-            "internalType": "bool",
-            "name": "transhipment",
-            "type": "bool"
-          },
-          {
-            "internalType": "uint256",
-            "name": "latestShipmentDate",
-            "type": "uint256"
-          }
-        ],
-        "internalType": "struct TradeFinance.ShipmentInformation",
-        "name": "_shipmentInformation",
-        "type": "tuple"
-      },
-      {
-        "internalType": "address",
-        "name": "_tokenAddress",
-        "type": "address"
-      }
-    ],
-    "name": "updateLcDetail",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
   },
   {
     "inputs": [
