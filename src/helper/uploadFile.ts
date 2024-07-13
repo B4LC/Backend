@@ -124,7 +124,7 @@ export async function uploadDocument(curLC: LoCDocument) {
         );
         await tx.wait();
         if (tx) {
-          curLC.status = LetterOfCreditStatus.DOCUMENT_APPROVED;
+          curLC.status = LetterOfCreditStatus.DOCUMENT_UPLOADED;
           await curLC.save();
         }
       }
